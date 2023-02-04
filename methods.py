@@ -4,12 +4,106 @@ import random as rand
 from sklearn import linear_model
 from datetime import datetime
 import time
+import os
 import decimal
 
-np.set_printoptions(precision = 14, suppress=True)
+# >
+# Check if the file exists
 
-# This value can be changed manually over time for experimentation
-alpha = 1
+
+def file_exists(filename):
+    if os.path.exists(filename):
+        # Load previous data
+        user_input_data = np.loadtxt(filename, delimiter=',')
+
+        # There's no need for a time_amt since we've already collected data
+        time_amt = None
+
+    else:
+        # Create a new array
+        user_input_data = np.array([])
+
+        # We haven't collected data yet, so we need the user to guess the first amount of time
+        time_amt = float(input(
+            "Since the dataset is new, how many time units (in minutes) do you expect to complete this task? "))
+
+    return user_input_data, time_amt
+# <
+
+# >
+
+
+def user_questions():
+    # This will define the number of lines we need to make that gradient descent will be performed on
+    num_lines = int(input("How many intervals would you like there to be? "))
+
+    # dimensions = int(input("How many degrees would you like? "))
+
+    num_segments = int(input("How many segments are there? "))
+
+    # time_amt = float(input("How many time units are there? "))
+
+    num_iterations = int(
+        input("How many iterations of initial training do you want? "))
+
+    return num_lines, num_segments, num_iterations
+# <
+
+# >
+
+
+def conditions_met(time_amt, user_input_data, num_lines, num_segments, num_iterations):
+    # This condition is only met if we're working off a csv file we already know
+    if time_amt == None:
+
+        # This means we should calculate the mean of our already existing dataset when training our first lines
+        user_mean = user_input_data.mean()
+        user_std_dev = user_input_data.std()
+
+        print("Starting Standard Deviation = " + str(user_std_dev))
+        print("Starting Mean = " + str(user_mean))
+
+        # TODO: Uncomment the following line and comment the next line out if you want to use train_lines
+        # lines = train_lines(user_mean, user_std_dev, num_lines, dimensions, num_segments, num_iterations)
+        lines = train_lines_2(user_mean, user_std_dev,
+                              num_lines, num_segments, num_iterations)
+
+    # Meaning that the dataset is new
+    else:
+
+        # Train the lines initially, which means we have to guess the first mean by using the time_amt variable
+        # provided by the user to calculate an estimated mean. Note that we assume the standard deviation is 1 here
+        # as that is the default case. We don't need to prompt the user for this, because there's no way the user
+        # could accurately predict this value. Especially considering this program's job is basically to find this value.
+        # Note: We could also generate a random number or 0 as a default for the mean, but its better to have an accurate guess
+        #       than to start off with a number that is completely off
+        # TODO: Uncomment the following line and comment the next line out if you want to use train_lines
+        # lines = train_lines(time_amt / num_segments, 1, num_lines, dimensions, num_segments, num_iterations)
+        lines = train_lines_2(time_amt / num_segments, 1,
+                              num_lines, num_segments, num_iterations)
+
+    return lines
+# <
+
+# >
+# AM PM FUNCTION
+# ADD START TIME
+# Check to make sure changes in PM to AM don't change the sign/value of the time difference
+
+
+def delta_time(start_time, prev_time):
+
+    if (start_time - prev_time).total_seconds() >= 0:
+
+        # Get the time from inception in terms of minutes
+        x_input = (start_time - prev_time).total_seconds() / 60
+
+    else:
+
+        # Get the time from inception in terms of minutes
+        x_input = (prev_time - start_time).total_seconds() / 60
+
+    return x_input
 
 
 def standardize(data):
@@ -25,7 +119,8 @@ def standardize(data):
     for col in range(N - 1):
 
         # We standardize each column
-        data[:, col] = (data[:, col] - data[:, col].mean()) / data[:, col].std()
+        data[:, col] = (data[:, col] - data[:, col].mean()) / \
+            data[:, col].std()
 
     return data
 
@@ -34,7 +129,7 @@ def least_squares(x, y):
 
     regr = linear_model.LinearRegression(fit_intercept=False)
     regr.fit(x, y)
-    
+
     return regr
 
 
@@ -105,16 +200,16 @@ def summation(w, x, i):
 
     for index in range(len(w)):
 
-        #print("Dotting " + str(w[index]) + " and " + str(x[index]))
+        # print("Dotting " + str(w[index]) + " and " + str(x[index]))
 
         total += (w[index] * x[index])
 
-    #print("Performing " + str(total) + " - " + str(x[len(x) - 1]))
+    # print("Performing " + str(total) + " - " + str(x[len(x) - 1]))
 
     # Finally, subtract the Y value
     total -= x[len(x) - 1]
 
-    #print("Getting a result of " + str(total))
+    # print("Getting a result of " + str(total))
 
     # print("Multiplying the " + str(i) + " column x value to total")
 
@@ -128,7 +223,6 @@ def summation(w, x, i):
     # print("Current total: " + str(total))
 
     return total
-
 
 
 # This function takes an array of weights, a 2D array of training data and returns new weights
@@ -173,13 +267,13 @@ def train_weights(w, data):
         # print("Simplifying to: " + str(w[weight]) + " - (" + str(alpha / N) + ") * " + str(total_sum))
         # print("Simplifying to: " + str(w[weight]) + " - " + str((alpha / N) * total_sum))
         # print("Giving a value of: " + str(w[weight] - ((alpha / N) * total_sum)))
-        
+
         # Update each weight
         w[weight] = w[weight] - ((alpha / N) * total_sum)
 
         # print("New weight value: " + str(w[weight]))
 
-    #print("NEW W: " + str(w))
+    # print("NEW W: " + str(w))
 
     # Return the weights
     return w
@@ -191,6 +285,8 @@ def train_weights(w, data):
 #    affected by the outliers of the distribution and instead focuses solely on the changing
 #    mean value as time progresses, which generates a much better prediction at the end.
 # 3) It doesn't use "dimensions", so in other words it only supports lines rather than non-linear equations
+
+
 def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations):
 
     # Generate the lines by initializing them to zero
@@ -201,6 +297,8 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations):
 
         # This is the array containing the mean of the current time at each segment's distribution
         # This allows us to calculate each iteration in parallel, which drastically speeds up the calculation
+        # TODO: Replace 0 (the starting x point when simulating) with the current time (pass the current time
+        #       as an x-value to train_lines_2())
         time = np.array([0 for _ in range(num_iterations)])
 
         # total_time contains all x points for all segments generated for the current line
@@ -210,12 +308,14 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations):
         total_y = np.array([])
 
         # This is how many segments we start at
+        # TODO: Replace segs_done = 1 with the segment we are currently on.
         segs_done = 1
 
         for _ in range(num_segments):
 
             # Update the time values by adding the mean and original time
-            time = np.add(time, np.random.normal(mean, std_dev, num_iterations))
+            time = np.add(time, np.random.normal(
+                mean, std_dev, num_iterations))
 
             # This contains all x values that we use to fit the current line.
             # Note that these values are simply the mean of all iterations generated by the previous line
@@ -224,7 +324,7 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations):
             # This is just the one y-value that matches the one mean
             y_values = np.array([segs_done])
 
-            # Add our x values to the long list of current 
+            # Add our x values to the long list of current
             total_time = np.append(total_time, x_values)
             total_y = np.append(total_y, y_values)
 
@@ -233,12 +333,10 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations):
 
         # Fit the line and save it in our list of lines
         regr = linear_model.LinearRegression(fit_intercept=False)
-        lines[line] = regr.fit(total_time.reshape(-1,1), total_y)
+        lines[line] = regr.fit(total_time.reshape(-1, 1), total_y)
 
     # Return our newly formed lines
     return lines
-
-
 
 
 # Note: The second to last parameter was time_amt, but I removed it because it was never used
@@ -251,7 +349,6 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
     # x = np.random.normal(0, std_dev, 10000)
     # x = np.random.normal(mean, std_dev, 10000)
 
-
     # # This will define the number of lines we need to make that gradient descent will be performed on
     # num_lines = int(input("How many intervals would you like there to be? "))
 
@@ -263,11 +360,9 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
 
     # num_iterations = int(input("How many iterations of initial training do you want? "))
 
-
-
     # Note: Lines are of the form y = (w1) * (x1) + (w2) * (x1)^2 ..., so the # of weights = the # dimensions
     #       and the # of arrays of weights = the # of lines
-    #lines = np.array([[0 for _ in range(dimensions)] for _ in range(num_lines)])
+    # lines = np.array([[0 for _ in range(dimensions)] for _ in range(num_lines)])
     lines = [[0 for _ in range(dimensions)] for _ in range(num_lines)]
 
     # Do one set of sampling per line we have (line_index is the index of the current line)
@@ -281,7 +376,7 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
         # Example: If there are 5 components/parts to be completed, then if num_iterations = 4
         #          then the program will generate 5 * 4 = 20 points of data to be plugged into
         #          least squares. Each sample will iterate through the number of components/parts
-        #          for the y-value, effectively generating num_iterations sample completions 
+        #          for the y-value, effectively generating num_iterations sample completions
         for _ in range(num_iterations):
 
             # Reset the x and y plot arrays
@@ -305,7 +400,7 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
                 point = []
 
                 # Try this value as being (# of steps) / 4
-                #std_dev = ((time_amt - curr_time) / (num_segments - segs_done)) / 4
+                # std_dev = ((time_amt - curr_time) / (num_segments - segs_done)) / 4
 
                 # TODO: Uncomment these two lines of code if commenting them breaks the code! (These two lines appear to break the program)
                 # if curr_time > time_amt:
@@ -318,7 +413,7 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
                 #     x_sample[i] = np.random.choice(x, 1)
 
                 # Update our time
-                #curr_time += x_sample[i] + (std_dev * 4)
+                # curr_time += x_sample[i] + (std_dev * 4)
                 # TODO: The following line was the original line. If you uncomment it, then see the TODO for when we first assigned x and uncomment it as well
                 # curr_time += x_sample[i] + mean
                 curr_time += x_sample[i]
@@ -340,7 +435,7 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
                 point.append(segs_done)
 
                 # Now we copy the new point to data
-                
+
                 # Check if the data isn't empty
                 if data.size != 0:
 
@@ -355,23 +450,23 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
 
                 # x_plot.append(curr_time)
                 # y_plot.append(segs_done)
-        
-        #print("LINE: " + str(lines[line_index]))
-        #print("DATA: " + str(data))
 
-        #data = standardize(data)
+        # print("LINE: " + str(lines[line_index]))
+        # print("DATA: " + str(data))
 
-        #print("DATA after standardizing: " + str(data))
+        # data = standardize(data)
+
+        # print("DATA after standardizing: " + str(data))
 
         # Train the current line the randomly sampled Gaussian Distribution data
-        #lines[line_index] = train_weights(lines[line_index], data)
+        # lines[line_index] = train_weights(lines[line_index], data)
 
         # Pass the weights and the x and y data
-        lines[line_index] = least_squares(data[:, 0:dimensions], data[:, dimensions])
+        lines[line_index] = least_squares(
+            data[:, 0:dimensions], data[:, dimensions])
 
         # Note: The following line was the original call to the parameter "w" in least_squares, but the parameter isn't used
         # lines[line_index] = least_squares(lines[line_index], data[:, 0:dimensions], data[:, dimensions])
-
 
     # print("Lines: ")
 
@@ -388,7 +483,6 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
     #         print(str(lines[line][num]) + "x^" + str(num + 1), end='')
 
     #     print()
-    
 
     # for line in range(2):
 
@@ -399,7 +493,7 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
     #         if lines[line].intercept_ < 0:
 
     #             print("-" + str(lines[line].intercept_) + "x ")
-            
+
     #         else:
 
     #             print(str(lines[line].intercept_) + "x ")
@@ -415,7 +509,6 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
     #             else:
 
     #                 print("+" + str(lines[line].coef_[num]) + "x^" + str(num + 2) + " ")
-
 
     # Note: Uncomment these lines if you want to print the equation of the line
 
@@ -442,23 +535,25 @@ def train_lines(mean, std_dev, num_lines, dimensions, num_segments, num_iteratio
 
     # ---------------------------------------------------------------------------------------------------------------
 
-        #print(lines[line].coef_)
-        #print(lines[line].intercept_)
+        # print(lines[line].coef_)
+        # print(lines[line].intercept_)
 
     # Return the lines
     return lines
 
 # This function takes any float and prints it without scientific notation
+
+
 def print_without_e(some_float):
-    
-    #print(some_float)
-    
+
+    # print(some_float)
+
     # Get the string version of our decimal
     str_decimal = decimal.Decimal(str(some_float))
-    
+
     # Get the number of decimal digits to the right of the decimal point
     decimal_count = abs(str_decimal.as_tuple().exponent)
-    
+
     # Get the format string for printing
     format_str = '{0:.' + str(decimal_count) + 'f}'
 
@@ -470,14 +565,15 @@ def print_without_e(some_float):
 # This only gets the user's input from one segment and returns it
 # It will, given the input 'i', display timing information
 # Given the input 'c', this function returns the curr_seg
-def get_segment(start_time, prev_time, prev_seg = None):
+def get_segment(start_time, prev_time, prev_seg=None):
 
     # We start out not having any choice made by the user
     choice = None
 
     while choice != 'c':
 
-        choice = input("Would you like to see i(nfo) or c(omplete a segment)? i or c? ")
+        choice = input(
+            "Would you like to see i(nfo) or c(omplete a segment)? i or c? ")
 
         # Display all metrics including:
         # Previous Segment, Previous Time, Current Segment and Current Time
@@ -504,17 +600,20 @@ def get_segment(start_time, prev_time, prev_seg = None):
 
                 conception_time = curr_time - start_time
 
-            print("\nInitial Starting Time: " + str(start_time.strftime('%Y/%m/%d %I:%M:%S %p')))
+            print("\nInitial Starting Time: " +
+                  str(start_time.strftime('%Y/%m/%d %I:%M:%S %p')))
 
             print("Time Since Conception: " + str(conception_time))
 
-            print("Previous Clock Time: " + str(prev_time.strftime('%Y/%m/%d %I:%M:%S %p')))
+            print("Previous Clock Time: " +
+                  str(prev_time.strftime('%Y/%m/%d %I:%M:%S %p')))
 
             if prev_seg != None:
-                
+
                 print("Previous Segment Time: " + str(prev_seg))
-            
-            print("Current Clock Time: " + str(curr_time.strftime('%Y/%m/%d %I:%M:%S %p')))
+
+            print("Current Clock Time: " +
+                  str(curr_time.strftime('%Y/%m/%d %I:%M:%S %p')))
 
             print("Current Segment Time: " + str(curr_seg))
 
@@ -540,6 +639,8 @@ def get_segment(start_time, prev_time, prev_seg = None):
             return curr_time, curr_seg
 
 # Remove all values in arr less than val
+
+
 def remove_out_of_range(arr, lower_bound, upper_bound):
 
     # We need a list of all indexes, because we want to return the indexes of the lines that are within range
@@ -548,7 +649,7 @@ def remove_out_of_range(arr, lower_bound, upper_bound):
 
     # Get the array of values related to the lower bound
     lower_arr = lower_bound - arr
-    
+
     # This is the starting value, but this should never be negative
     min_index = 0
 
@@ -574,11 +675,11 @@ def remove_out_of_range(arr, lower_bound, upper_bound):
                 lower_arr = np.delete(lower_arr, min_index, 0)
                 arr = np.delete(arr, min_index, 0)
                 index_list = np.delete(index_list, min_index, 0)
-                #i -= 1
+                # i -= 1
 
                 # This is now the closest value to our lower bound
                 min_index = i - 1
-            
+
             else:
 
                 # Remove our current element, since the value at min_index is closer to the lower bound
@@ -589,9 +690,9 @@ def remove_out_of_range(arr, lower_bound, upper_bound):
                 # Note: We don't need to subtract 1 from i in this case, because we're deleting the value that were at
 
         else:
-        
+
             i += 1
-    
+
     # arr has changed, so just subtract upper_bound from the array to get the upper_arr.
     # This saves time, because we don't have to go through elements that were already deleted
     upper_arr = arr - upper_bound
@@ -623,11 +724,11 @@ def remove_out_of_range(arr, lower_bound, upper_bound):
                 upper_arr = np.delete(upper_arr, max_index, 0)
                 arr = np.delete(arr, max_index, 0)
                 index_list = np.delete(index_list, max_index, 0)
-                #i -= 1
+                # i -= 1
 
                 # This is now the closest value to our upper bound
                 max_index = i - 1
-            
+
             else:
 
                 # This uses the same reasoning as the above "if" block
