@@ -3,4 +3,6 @@ file = 'config.ini'
 config = ConfigParser()
 config.read(file)
 FORMAT = config['format']
-DISPLAY_LINES = FORMAT['displayLines']
+DISPLAY_LINES = FORMAT.getboolean('display_lines')
+FILE_NAME = FORMAT.get('file_name')
+ALPHA = FORMAT.getint('alpha')

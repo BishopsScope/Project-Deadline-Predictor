@@ -7,23 +7,43 @@ import time
 import os
 from methods import *
 import decimal
+import config_files as cf
+
+#########################################################
+# THIS IS THE CLASS FOR GETTING THE INFORMATION
+# THIS IS CURRENTLY NOT BEING USED IN THE MAIN PORTION AND NEEDS TO BE INCLUDED
+
+
+class Task_Information:
+    def __init__(self) -> None:
+        self.filename = cf.FILE_NAME
+        self.display_lines = cf.DISPLAY_LINES
+        self.alpha = cf.ALPHA
+        self.user_input_data, self.time_amt = file_exists(self.filename)
+        self.num_lines, self.num_segments, self.num_iterations = user_questions()
+        self.start_time = datetime.now()
+        self.lines = conditions_met(self.time_amt, self.user_input_data,
+                                    self.num_lines, self.num_segments, self.num_iterations)
+# THIS IS A TEST FOR THE CLASS
+# test = Task_Information()
+# print(test.filename)
+#########################################################
 
 
 def running_code():
-
     # INSERT CONFIG
-    filename = 'data.csv'
+    filename = cf.FILE_NAME
 
     # INSERT CONFIG
     # Set this value to True if you want to see graphs each time new lines are generated
-    display_lines = True
+    display_lines = cf.DISPLAY_LINES
 
     # INSERT CONFIG
     np.set_printoptions(precision=14, suppress=True)
 
     # INSERT CONFIG
     # This value can be changed manually over time for experimentation
-    alpha = 1
+    alpha = cf.ALPHA
 
     # FILE_EXISTS FUNCTION WAS DEFINED HERE
     user_input_data, time_amt = file_exists(filename)
