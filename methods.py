@@ -7,7 +7,6 @@ import time
 import os
 import decimal
 
-# >
 # Check if the file exists
 
 
@@ -28,9 +27,6 @@ def file_exists(filename):
             "Since the dataset is new, how many time units (in minutes) do you expect to complete this task? "))
 
     return user_input_data, time_amt
-# <
-
-# >
 
 
 def user_questions():
@@ -47,9 +43,6 @@ def user_questions():
         input("How many iterations of initial training do you want? "))
 
     return num_lines, num_segments, num_iterations
-# <
-
-# >
 
 
 def conditions_met(time_amt, user_input_data, num_lines, num_segments, num_iterations):
@@ -83,11 +76,7 @@ def conditions_met(time_amt, user_input_data, num_lines, num_segments, num_itera
                               num_lines, num_segments, num_iterations)
 
     return lines
-# <
 
-# >
-# AM PM FUNCTION
-# ADD START TIME
 # Check to make sure changes in PM to AM don't change the sign/value of the time difference
 
 
@@ -107,7 +96,6 @@ def delta_time(start_time, prev_time):
 
 
 def standardize(data):
-
     if len(data.shape) == 1:
 
         N = len(data)
@@ -351,8 +339,11 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations, elapse
     # Return our newly formed lines
     return lines
 
+<<<<<<< HEAD
 # This function takes any float and prints it without scientific notation
 
+=======
+>>>>>>> 3bb7926a63e259578facc8988fa9ca48353ac906
 
 def print_without_e(some_float):
 
