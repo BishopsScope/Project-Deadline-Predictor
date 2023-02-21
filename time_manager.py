@@ -24,6 +24,7 @@ class Task_Information:
         self.start_time = datetime.now()
         self.lines = conditions_met(self.time_amt, self.user_input_data,
                                     self.num_lines, self.num_segments, self.num_iterations)
+
 # THIS IS A TEST FOR THE CLASS
 # test = Task_Information()
 # print(test.filename)
@@ -76,18 +77,25 @@ def running_code():
 
         # Reset the user input since there's a new point being inputted
         # This value must be zero so that the first subtraction does nothing
-        prev_input_1 = 0
-        prev_input_2 = 0
+        # prev_input_1 = 0
+        # prev_input_2 = 0
 
         # print("Input " + str(num_segments) + " numbers on a separate line: ")
 
         # Store the new prev_time and prev_seg from the newly collected segment data from the user
+        # prev_time - The clock time when the last segment was completed
+        # prev_seg - The time difference between the most current segment that's been completed
+        #            and the one prior to that one.
         prev_time, prev_seg = get_segment(start_time, prev_time, prev_seg)
 
         # Note: total_seconds() converts the time difference to seconds and then we divide by 60 to convert it to mins
+        # prev_seg_mins - The number of minutes between the prior and currently completed segment
         prev_seg_mins = prev_seg.total_seconds() / 60
 
+        prev_time_mins = delta_time(start_time, prev_time)
+
         # Append the newest time to our set of data we've collected
+        # user_input_data - The list of segment completion times (originally generated from the CSV)
         user_input_data = np.append(user_input_data, [prev_seg_mins])
 
         # Get the mean of all user inputted data
@@ -107,14 +115,15 @@ def running_code():
         # TODO: Uncomment the following line and comment the next line out if you want to use train_lines
         # lines = train_lines(user_mean, user_std_dev, num_lines, dimensions, num_segments, num_iterations)
         lines = train_lines_2(user_mean, user_std_dev,
-                              num_lines, num_segments, num_iterations)
+                              num_lines, num_segments,
+                              num_iterations, prev_time_mins, i - 1)
 
         # Check if the user wants to see lines displayed or not
         if display_lines:
 
             # This is the first set of lines we plot
             print("Plotting Lines ...")
-            plot_lines(lines, num_segments)
+            plot_lines(lines, num_segments, prev_time_mins, i)
 
         ########################
         # AM PM FUNCTION CALL HERE
@@ -129,7 +138,7 @@ def running_code():
         curr_x = np.array([x_input])
 
         # print("curr_x: " + str(curr_x))
-
+        # TODO: Move curr_y and for loop to plot_lines in methods.py
         curr_y = np.array([])
 
         for line in range(len(lines)):
