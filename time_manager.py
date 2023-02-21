@@ -127,96 +127,108 @@ def running_code():
 
         ########################
         # AM PM FUNCTION CALL HERE
-        x_input = delta_time(start_time, prev_time)
+        # x_input = delta_time(start_time, prev_time)
         ########################
 
-        # This contains the total amount of time from the time of conception to the time we finished our last segment.
-        # This value will be passed to all lines we generated to determine the correct range of intervals to report.
-        # TODO: Uncomment the following line if you want to use more than one dimension (you'll also have to change all
-        #       function calls to be train_lines rather than train_lines_2 in order for this to work)
-        # curr_x = np.array([x_input ** power for power in range(1, dimensions + 1)])
-        curr_x = np.array([x_input])
-
-        # print("curr_x: " + str(curr_x))
-        # TODO: Move curr_y and for loop to plot_lines in methods.py
-        curr_y = np.array([])
-
-        for line in range(len(lines)):
-
-            # Append the resulting y value when plugging curr_x into each respective line
-            curr_y = np.append(
-                curr_y, lines[line].predict(curr_x.reshape(1, -1)))
-
-        # TODO: Find the function (if any) that is ABOVE the y value of i, the function (if any)
-        #       that is BELOW the y value of i - 1 and all functions inbetween i - 1 and i. Report the two functions
-        #       that have the fastest completion time and the slowest completion time.
-        # Note: If there's only one function that meets the requirements and it's ABOVE, report the interval [one_func, ?]
-        #       If there's only one function that meets the requirements and it's BELOW, report the interval [?, one_func]
-        #       If there's zero functions that meet the requirements, report [?, ?]
-
-        y_index = 0
-
-        # First, iterate through all curr_y values and remove those that exceed the number of segments or are less than 0
-        # (do this by deleting those entries)
-        while y_index < len(curr_y):
-
-            if curr_y[y_index] < 0 or curr_y[y_index] > num_segments:
-
-                # print("Before (" + str(y_index) + ") " + str(curr_y))
-
-                # Remove that function from consideration
-                curr_y = np.delete(curr_y, y_index, 0)
-
-                # print("After (" + str(y_index) + ") " + str(curr_y))
-
-            else:
-
-                # Increment the index
-                y_index += 1
-
-        # print("Removing all lines that aren't in the interval [" + str(i-1) + "," + str(i) + "]")
-        # print("Y Values Before: " + str(curr_y))
-
-        indexes, curr_y = remove_out_of_range(curr_y, i - 1, i)
-
-        # print("Y Values After: " + str(curr_y))
-        # print("Line Indexes: " + str(indexes))
-
-        # This contains all y values of the remaining lines that cross the line y = num_segments
         end_points = np.array([])
 
-        # Get all lines at the remaining indexes and save their y values when y = num_segments
-        for line_index in indexes:
+        for line_index in range(len(lines)):
 
-            # Note that we're appending -num_segments because we need to shift each curve down
-            # by num_segments to align it with the x-axis so we can find the roots
-            coefficients = np.append(
-                np.flip(lines[line_index].coef_, 0), -num_segments)
+            coefficients = np.append(np.flip(lines[line_index].coef_, 0), -num_segments)
 
-            # Get all roots (including imaginary roots)
             coef_roots = np.roots(coefficients)
 
-            # Get only the real roots and throw away the imaginary roots
-            real_coef_roots = np.real(coef_roots[np.isreal(coef_roots)])
+            end_points = np.append(end_points, coef_roots)
 
-            root_index = 0
+        # print("The roots I have are the following: " + str(end_points))
 
-            while root_index < len(real_coef_roots):
+        # # This contains the total amount of time from the time of conception to the time we finished our last segment.
+        # # This value will be passed to all lines we generated to determine the correct range of intervals to report.
+        # # TODO: Uncomment the following line if you want to use more than one dimension (you'll also have to change all
+        # #       function calls to be train_lines rather than train_lines_2 in order for this to work)
+        # # curr_x = np.array([x_input ** power for power in range(1, dimensions + 1)])
+        # curr_x = np.array([prev_time_mins])
 
-                # If the root is less than zero, we must throw it out because it's irrelevant
-                if real_coef_roots[root_index] < 0:
+        # # print("curr_x: " + str(curr_x))
+        # # TODO: Move curr_y and for loop to plot_lines in methods.py
+        # curr_y = np.array([])
 
-                    real_coef_roots = np.delete(real_coef_roots, root_index, 0)
+        # for line in range(len(lines)):
 
-                else:
+        #     # Append the resulting y value when plugging curr_x into each respective line
+        #     curr_y = np.append(
+        #         curr_y, lines[line].predict(curr_x.reshape(1, -1)))
 
-                    # Increment the root index
-                    root_index += 1
+        # # TODO: Find the function (if any) that is ABOVE the y value of i, the function (if any)
+        # #       that is BELOW the y value of i - 1 and all functions inbetween i - 1 and i. Report the two functions
+        # #       that have the fastest completion time and the slowest completion time.
+        # # Note: If there's only one function that meets the requirements and it's ABOVE, report the interval [one_func, ?]
+        # #       If there's only one function that meets the requirements and it's BELOW, report the interval [?, one_func]
+        # #       If there's zero functions that meet the requirements, report [?, ?]
 
-            if real_coef_roots.size > 0:
+        # y_index = 0
 
-                # Append the root which has the smallest x value (from the previous while loop, it must be >= 0)
-                end_points = np.append(end_points, np.min(real_coef_roots, 0))
+        # # First, iterate through all curr_y values and remove those that exceed the number of segments or are less than 0
+        # # (do this by deleting those entries)
+        # while y_index < len(curr_y):
+
+        #     if curr_y[y_index] < 0 or curr_y[y_index] > num_segments:
+
+        #         # print("Before (" + str(y_index) + ") " + str(curr_y))
+
+        #         # Remove that function from consideration
+        #         curr_y = np.delete(curr_y, y_index, 0)
+
+        #         # print("After (" + str(y_index) + ") " + str(curr_y))
+
+        #     else:
+
+        #         # Increment the index
+        #         y_index += 1
+
+        # # print("Removing all lines that aren't in the interval [" + str(i-1) + "," + str(i) + "]")
+        # # print("Y Values Before: " + str(curr_y))
+
+        # indexes, curr_y = remove_out_of_range(curr_y, i - 1, i)
+
+        # # print("Y Values After: " + str(curr_y))
+        # # print("Line Indexes: " + str(indexes))
+
+        # # This contains all y values of the remaining lines that cross the line y = num_segments
+        # end_points = np.array([])
+
+        # # Get all lines at the remaining indexes and save their y values when y = num_segments
+        # for line_index in indexes:
+
+        #     # Note that we're appending -num_segments because we need to shift each curve down
+        #     # by num_segments to align it with the x-axis so we can find the roots
+        #     coefficients = np.append(
+        #         np.flip(lines[line_index].coef_, 0), -num_segments)
+
+        #     # Get all roots (including imaginary roots)
+        #     coef_roots = np.roots(coefficients)
+
+        #     # Get only the real roots and throw away the imaginary roots
+        #     real_coef_roots = np.real(coef_roots[np.isreal(coef_roots)])
+
+        #     root_index = 0
+
+        #     while root_index < len(real_coef_roots):
+
+        #         # If the root is less than zero, we must throw it out because it's irrelevant
+        #         if real_coef_roots[root_index] < 0:
+
+        #             real_coef_roots = np.delete(real_coef_roots, root_index, 0)
+
+        #         else:
+
+        #             # Increment the root index
+        #             root_index += 1
+
+        #     if real_coef_roots.size > 0:
+
+        #         # Append the root which has the smallest x value (from the previous while loop, it must be >= 0)
+        #         end_points = np.append(end_points, np.min(real_coef_roots, 0))
 
         # Make sure we have at least one root
         if end_points.size == 0:
@@ -227,9 +239,12 @@ def running_code():
 
             start_time_timestamp = start_time.timestamp()
 
-            min_end_point = np.min(end_points, 0)
+            # min_end_point = np.min(end_points, 0)
 
-            max_end_point = np.max(end_points, 0)
+            # max_end_point = np.max(end_points, 0)
+
+            min_end_point = np.min(end_points)
+            max_end_point = np.max(end_points)
 
             print("Predicted Interval: [" + str(min_end_point) + "," +
                   str(max_end_point) + "] (cumulative time in minutes)")

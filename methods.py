@@ -169,7 +169,8 @@ def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
         exit(1)
 
     # Get the maximum x value to determine the x bound for the window
-    max_x = np.max(x_values, 0)
+    # max_x = np.max(x_values, 0)
+    max_x = np.max(x_values)
 
     # Extract each line in the list of lines
     for line_index in range(len(lines)):
@@ -184,7 +185,7 @@ def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
         plt.plot(x, lines[line_index].predict(x.reshape(-1, 1)))
 
     # Set the upper y and x bounds
-    plt.xlim(0, max_x * 2)
+    plt.xlim(0, max_x)
     plt.ylim(0, max_y)
     plt.grid()
     plt.plot(elapsed_x_time, curr_y_seg, marker="o",
@@ -342,7 +343,7 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations, elapse
             total_y = np.append(total_y, y_values)
             
         # Fit the line and save it in our list of lines
-        regr = linear_model.LinearRegression(fit_intercept=True)
+        regr = linear_model.LinearRegression(fit_intercept=False)
         lines[line] = regr.fit(total_time.reshape(-1, 1), total_y)
 
         # The following line of code takes our current position in time and uses the slope
