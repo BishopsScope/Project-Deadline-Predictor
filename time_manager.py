@@ -61,11 +61,11 @@ def running_code():
                            num_lines, num_segments, num_iterations)
 
     # Check if the user wants to see lines displayed or not
-    if display_lines:
+    # if display_lines:
 
-        # This is the first set of lines we plot
-        print("Plotting Lines ...")
-        plot_lines(lines, num_segments)
+    #     # This is the first set of lines we plot
+    #     print("Plotting Lines ...")
+    #     plot_lines(lines, num_segments)
 
     # CREATE A FUNCTION HERE UNTIL THE END OF THIS FILE CALLED "start_program"
 
@@ -116,7 +116,7 @@ def running_code():
         # lines = train_lines(user_mean, user_std_dev, num_lines, dimensions, num_segments, num_iterations)
         lines = train_lines_2(user_mean, user_std_dev,
                               num_lines, num_segments,
-                              num_iterations, prev_time_mins, i - 1)
+                              num_iterations, prev_time_mins, i)
 
         # Check if the user wants to see lines displayed or not
         if display_lines:
