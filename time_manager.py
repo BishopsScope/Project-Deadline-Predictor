@@ -16,7 +16,7 @@ import config_files as cf
 
 class Task_Information:
     def __init__(self) -> None:
-        self.filename = cf.FILE_NAME
+        self.filename = f"csv_files/{cf.FILE_NAME}"
         self.display_lines = cf.DISPLAY_LINES
         self.alpha = cf.ALPHA
         self.user_input_data, self.time_amt = file_exists(self.filename)
@@ -33,7 +33,7 @@ class Task_Information:
 
 def running_code():
     # INSERT CONFIG
-    filename = cf.FILE_NAME
+    filename = f"csv_files/{cf.FILE_NAME}"
 
     # INSERT CONFIG
     # Set this value to True if you want to see graphs each time new lines are generated
@@ -134,7 +134,8 @@ def running_code():
 
         for line_index in range(len(lines)):
 
-            coefficients = np.append(np.flip(lines[line_index].coef_, 0), -num_segments)
+            coefficients = np.append(
+                np.flip(lines[line_index].coef_, 0), -num_segments)
 
             coef_roots = np.roots(coefficients)
 
@@ -258,7 +259,7 @@ def running_code():
             print("Worst Case Time: " + str(datetime.fromtimestamp(start_time_timestamp +
                                                                    (60 * max_end_point)).strftime('%Y/%m/%d %I:%M:%S %p')))
 
-        # Backup the current date we have in a json file
+        # Backup the current date we have in a csv file
         np.savetxt(filename, user_input_data, delimiter=',')
 
         # cont = input("Would you like to continue? (Y/N) ")
