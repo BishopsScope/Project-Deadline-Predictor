@@ -14,17 +14,34 @@ import config_files as cf
 # THIS IS CURRENTLY NOT BEING USED IN THE MAIN PORTION AND NEEDS TO BE INCLUDED
 
 
+# class Task_Information:
+#     def __init__(self) -> None:
+#         self.filename = f"csv_files/{cf.FILE_NAME}"
+#         self.display_lines = cf.DISPLAY_LINES
+#         self.alpha = cf.ALPHA
+#         self.user_input_data, self.time_amt = file_exists(self.filename)
+#         self.num_lines, self.num_segments, self.num_iterations = user_questions()
+#         self.start_time = datetime.now()
+#         self.lines = conditions_met(self.time_amt, self.user_input_data,
+#                                     self.num_lines, self.num_segments, self.num_iterations)
+
 class Task_Information:
-    def __init__(self) -> None:
+    def __init__(self, task_name, category, time_amt, num_lines, num_segments, num_iterations, display_lines):
+        self.task_name = task_name
+        self.category = category
+        self.time_amt = time_amt
+        self.num_lines = num_lines
+        self.num_segments = num_segments
+        self.num_iterations = num_iterations
+        self.display_lines = display_lines
+
         self.filename = f"csv_files/{cf.FILE_NAME}"
-        self.display_lines = cf.DISPLAY_LINES
         self.alpha = cf.ALPHA
-        self.user_input_data, self.time_amt = file_exists(self.filename)
-        self.num_lines, self.num_segments, self.num_iterations = user_questions()
-        self.start_time = datetime.now()
+        self.user_input_data = np.array([])
+
+    def create_lines(self):
         self.lines = conditions_met(self.time_amt, self.user_input_data,
                                     self.num_lines, self.num_segments, self.num_iterations)
-
 # THIS IS A TEST FOR THE CLASS
 # test = Task_Information()
 # print(test.filename)
@@ -260,7 +277,7 @@ def running_code():
                                                                    (60 * max_end_point)).strftime('%Y/%m/%d %I:%M:%S %p')))
 
         # Backup the current date we have in a csv file
-        np.savetxt(filename, user_input_data, delimiter=',')
+        save_file(filename, user_input_data)
 
         # cont = input("Would you like to continue? (Y/N) ")
         print("You have completed: " + str(i) + " / " +
