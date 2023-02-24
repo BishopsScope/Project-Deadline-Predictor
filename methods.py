@@ -1,17 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import random as rand
 from sklearn import linear_model
 from datetime import datetime
-import time
 import os
 import decimal
 
-# >
-# Check if the file exists
-
 
 def file_exists(filename):
+    """ Check if the file exists """
+
     if os.path.exists(filename):
         # Load previous data
         user_input_data = np.loadtxt(filename, delimiter=',')
@@ -31,17 +28,20 @@ def file_exists(filename):
 
 
 def save_file(filename, user_input_data):
+    """ Save the data to a file """
+
     # Save the data to a file
     np.savetxt(filename, user_input_data, delimiter=',')
     print("Data saved to " + filename)
 
 
 def user_questions():
+    """ Ask the user questions about their task """
+
     # This will define the number of lines we need to make that gradient descent will be performed on
     num_lines = int(input("How many intervals would you like there to be? "))
 
     # dimensions = int(input("How many degrees would you like? "))
-
     num_segments = int(input("How many segments are there? "))
 
     # time_amt = float(input("How many time units are there? "))
@@ -50,12 +50,43 @@ def user_questions():
         input("How many iterations of initial training do you want? "))
 
     return num_lines, num_segments, num_iterations
-# <
 
-# >
+
+def retrieve_endpoints(lines, num_segments):
+    """ Retrieve the endpoints of the lines """
+
+    end_points = np.array([])
+
+    for line_index in range(len(lines)):
+
+        coefficients = np.append(
+            np.flip(lines[line_index].coef_, 0), -num_segments)
+
+        coef_roots = np.roots(coefficients)
+
+        end_points = np.append(end_points, coef_roots)
+
+    return end_points
+
+
+def return_interval(end_points, start_time):
+    """ Return the interval of the end points """
+
+    if end_points.size == 0:
+
+        raise NotImplementedError("Predicted Interval: [?, ?]")
+
+    else:
+        start_time_timestamp = start_time.timestamp()
+        min_end_point = np.min(end_points)
+        max_end_point = np.max(end_points)
+
+    return start_time_timestamp, min_end_point, max_end_point
 
 
 def conditions_met(time_amt, user_input_data, num_lines, num_segments, num_iterations):
+    """ Check if the conditions are met """
+
     # This condition is only met if we're working off a csv file we already know
     if time_amt == None:
 
@@ -66,8 +97,6 @@ def conditions_met(time_amt, user_input_data, num_lines, num_segments, num_itera
         print("Starting Standard Deviation = " + str(user_std_dev))
         print("Starting Mean = " + str(user_mean))
 
-        # TODO: Uncomment the following line and comment the next line out if you want to use train_lines
-        # lines = train_lines(user_mean, user_std_dev, num_lines, dimensions, num_segments, num_iterations)
         lines = train_lines_2(user_mean, user_std_dev,
                               num_lines, num_segments, num_iterations)
 
@@ -80,21 +109,14 @@ def conditions_met(time_amt, user_input_data, num_lines, num_segments, num_itera
         # could accurately predict this value. Especially considering this program's job is basically to find this value.
         # Note: We could also generate a random number or 0 as a default for the mean, but its better to have an accurate guess
         #       than to start off with a number that is completely off
-        # TODO: Uncomment the following line and comment the next line out if you want to use train_lines
-        # lines = train_lines(time_amt / num_segments, 1, num_lines, dimensions, num_segments, num_iterations)
         lines = train_lines_2(time_amt / num_segments, 1,
                               num_lines, num_segments, num_iterations)
 
     return lines
-# <
-
-# >
-# AM PM FUNCTION
-# ADD START TIME
-# Check to make sure changes in PM to AM don't change the sign/value of the time difference
 
 
 def delta_time(start_time, prev_time):
+    """ Get the time difference between the start time and the previous time """
 
     if (start_time - prev_time).total_seconds() >= 0:
 
@@ -110,6 +132,7 @@ def delta_time(start_time, prev_time):
 
 
 def standardize(data):
+    """ Standardize the data """
 
     if len(data.shape) == 1:
 
@@ -129,6 +152,7 @@ def standardize(data):
 
 
 def least_squares(x, y):
+    """ Perform least squares on the data """
 
     regr = linear_model.LinearRegression(fit_intercept=True)
     regr.fit(x, y)
@@ -136,15 +160,17 @@ def least_squares(x, y):
     return regr
 
 
-# This function plots the newly formed lines after performing least squares upon the
-# completion of each segment.
-#
-# Note: This function assumes each function is linear, so x^2, x^3 ... won't work
-#
-# lines: a list of numpy lines
-# max_y: num_segments; the maximum y value
-# x_values: the x value of the intersection between the line y = max_y and each line
 def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
+    """ Plot the lines """
+
+    # This function plots the newly formed lines after performing least squares upon the
+    # completion of each segment.
+
+    # Note: This function assumes each function is linear, so x^2, x^3 ... won't work
+
+    # lines: a list of numpy lines
+    # max_y: num_segments; the maximum y value
+    # x_values: the x value of the intersection between the line y = max_y and each line
 
     x_values = np.array([])
 
@@ -158,13 +184,11 @@ def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
         # Get all roots (including imaginary roots, except in this particular function there are no imaginary roots)
         coef_roots = np.roots(coefficients)
 
-        # print("Appending " + str(coef_roots) + " to x_values")
-
         # Append the root of the current line
         x_values = np.append(x_values, coef_roots)
 
+    # Check if the lengths of the two arrays are the same
     if len(x_values) != len(lines):
-
         print("Error!")
         print("Length of x_values: " + str(len(x_values)))
         print("Length of lines: " + str(len(lines)))
@@ -172,7 +196,6 @@ def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
         exit(1)
 
     # Get the maximum x value to determine the x bound for the window
-    # max_x = np.max(x_values, 0)
     max_x = np.max(x_values)
 
     # Extract each line in the list of lines
@@ -181,7 +204,6 @@ def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
         # Note: We have two values here (our current x position in time and the x-value of where
         #       the line intersects num_segments) because we need two x points (and two y points)
         #       in order to plot a line.
-        # x = np.array([elapsed_x_time, x_values[line_index]])
         x = np.array([0, x_values[line_index]])
 
         # Plot the line
@@ -198,10 +220,12 @@ def plot_lines(lines, max_y, elapsed_x_time=0, curr_y_seg=0):
     plt.show()
 
 
-# This function takes two arrays: w (for the weights) and x (for the input you plug in)
-# and returns the y-predict value upon plugging it into y^ = (w1) * (x1) + (w2) * (x1)^2 ...
-# i is the value of the index from xij (see gradient descent formula)
 def summation(w, x, i):
+    """ Perform the summation function """
+
+    # This function takes two arrays: w (for the weights) and x (for the input you plug in)
+    # and returns the y-predict value upon plugging it into y^ = (w1) * (x1) + (w2) * (x1)^2 ...
+    # i is the value of the index from xij (see gradient descent formula)
 
     # Make sure the dimensions match (we have to add 1 to len(w) because of y)
     if len(w) + 1 != len(x):
@@ -217,30 +241,20 @@ def summation(w, x, i):
 
         total += (w[index] * x[index])
 
-    # print("Performing " + str(total) + " - " + str(x[len(x) - 1]))
-
     # Finally, subtract the Y value
     total -= x[len(x) - 1]
-
-    # print("Getting a result of " + str(total))
-
-    # print("Multiplying the " + str(i) + " column x value to total")
-
-    # print("Multiplying " + str(total) + " by " + str(x[i]))
 
     # Multiply by xij
     total *= x[i]
 
-    # print("Finally getting a result of " + str(total))
-
-    # print("Current total: " + str(total))
-
     return total
 
 
-# This function takes an array of weights, a 2D array of training data and returns new weights
-# after performing gradient descent on each set of weights
 def train_weights(w, data):
+    """ Perform gradient descent on the weights """
+
+    # This function takes an array of weights, a 2D array of training data and returns new weights
+    # after performing gradient descent on each set of weights
 
     # data.shape returns the length and width of the data array
     if len(data.shape) == 1:
@@ -261,46 +275,25 @@ def train_weights(w, data):
         # Select one entry of data at a time (avoiding the last position since it's the value of Y)
         for data_point in data:
 
-            # print("W (" + str(weight) + "): " + str(w[weight]))
-
-            # Now we execute the gradient descent formula:
-            # wj = wj - (alpha / N) * (Summation((y^ - y) * xij))
-
-            # w[line_index][weight] = w[line_index][weight] - ((alpha / len(data)) * )
-
-            # print("Old Total Sum: " + str(total_sum))
-
             total_sum += summation(w, data_point, weight)
-
-            # print("New Total Sum: " + str(total_sum))
-
-        # print("Final total " + str(weight) + " is " + str(total_sum))
-
-        # print("Updating the new weight with: " + str(w[weight]) + " - (" + str(alpha) + " / " + str(N) + ") * " + str(total_sum))
-        # print("Simplifying to: " + str(w[weight]) + " - (" + str(alpha / N) + ") * " + str(total_sum))
-        # print("Simplifying to: " + str(w[weight]) + " - " + str((alpha / N) * total_sum))
-        # print("Giving a value of: " + str(w[weight] - ((alpha / N) * total_sum)))
 
         # Update each weight
         w[weight] = w[weight] - ((alpha / N) * total_sum)
 
-        # print("New weight value: " + str(w[weight]))
-
-    # print("NEW W: " + str(w))
-
     # Return the weights
     return w
 
-# This is the new and improved version of train_lines. It has several improvements:
-# 1) It relies more heavily on numpy, which drastically improves speed (see plot_testing.py)
-# 2) At each segment (subtask), every separate iteration is condensed into the mean of that
-#    particular distribution. This means that when least squares is plotted it won't be as
-#    affected by the outliers of the distribution and instead focuses solely on the changing
-#    mean value as time progresses, which generates a much better prediction at the end.
-# 3) It doesn't use "dimensions", so in other words it only supports lines rather than non-linear equations
-
 
 def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations, elapsed_x_time=0, curr_y_seg=0):
+    """ Train the lines """
+
+    # This is the new and improved version of train_lines. It has several improvements:
+    # 1) It relies more heavily on numpy, which drastically improves speed (see plot_testing.py)
+    # 2) At each segment (subtask), every separate iteration is condensed into the mean of that
+    #    particular distribution. This means that when least squares is plotted it won't be as
+    #    affected by the outliers of the distribution and instead focuses solely on the changing
+    #    mean value as time progresses, which generates a much better prediction at the end.
+    # 3) It doesn't use "dimensions", so in other words it only supports lines rather than non-linear equations
 
     # Generate the lines by initializing them to zero
     lines = [None for _ in range(num_lines)]
@@ -310,8 +303,6 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations, elapse
 
         # This is the array containing the mean of the current time at each segment's distribution
         # This allows us to calculate each iteration in parallel, which drastically speeds up the calculation
-        # TODO: Replace 0 (the starting x point when simulating) with the current time (pass the current time
-        #       as an x-value to train_lines_2())
         time = np.array([0 for _ in range(num_iterations)])
 
         # total_time contains all x points for all segments generated for the current line
@@ -321,13 +312,6 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations, elapse
         total_y = np.array([])
 
         # This is how many segments we start at
-        # TODO: Replace segs_done = 1 with the segment we are currently on.
-        # segs_done = 1
-
-        # if curr_y_seg >= num_segments:
-
-        #     print("Error! The current segment is " + str(curr_y_seg) + " and the total number of segments is " + str(num_segments))
-
         for segs_done in range(1, num_segments + 1):
 
             # Update the time values by adding the mean and original time
@@ -355,21 +339,15 @@ def train_lines_2(mean, std_dev, num_lines, num_segments, num_iterations, elapse
         # y intercept when you know the slope and a point.
         lines[line].intercept_ = curr_y_seg - \
             (lines[line].coef_ * elapsed_x_time)
-        # print("Y Value: " + str(curr_y_seg) + "; X Value: " + str(elapsed_x_time))
         # print("Y Intercept: " + str(lines[line].intercept_))
         # print("Slope: " + str(lines[line].coef_))
 
-    # print(f"TOTAL TIME X {total_time}")
-    # print(f"TOTAL SEGMENTS y {total_y}")
     # Return our newly formed lines
     return lines
 
-# This function takes any float and prints it without scientific notation
-
 
 def print_without_e(some_float):
-
-    # print(some_float)
+    """ Print a float without scientific notation"""
 
     # Get the string version of our decimal
     str_decimal = decimal.Decimal(str(some_float))
@@ -385,12 +363,13 @@ def print_without_e(some_float):
     print(format_str.format(some_float), end='')
 
 
-# This only gets the user's input from one segment and returns it
-# It will, given the input 'i', display timing information
-# Given the input 'c', this function returns the curr_seg
-
 # REMOVE CHOICE WHEN IMPLEMENTING GUI
 def get_segment(start_time, prev_time, prev_seg=None):
+    """ Get the current segment """
+
+    # This only gets the user's input from one segment and returns it
+    # It will, given the input 'i', display timing information
+    # Given the input 'c', this function returns the curr_seg
 
     # We start out not having any choice made by the user
     choice = None
@@ -447,112 +426,3 @@ def get_segment(start_time, prev_time, prev_seg=None):
         # This means we need to save the current time difference between the previous clock and current clock
         elif choice == 'c':
             return curr_time, curr_seg
-
-# Remove all values in arr less than val
-
-
-def remove_out_of_range(arr, lower_bound, upper_bound):
-
-    # We need a list of all indexes, because we want to return the indexes of the lines that are within range
-    # rather than their y-value which is unidentifiable
-    index_list = np.array([i for i in range(len(arr))])
-
-    # Get the array of values related to the lower bound
-    lower_arr = lower_bound - arr
-
-    # This is the starting value, but this should never be negative
-    min_index = 0
-
-    # Make sure min_index doesn't start on a negative value, since that wouldn't make sense
-    while min_index < len(lower_arr) and lower_arr[min_index] < 0:
-
-        min_index += 1
-
-    i = min_index + 1
-
-    while i < len(lower_arr):
-
-        # Only check if the current value is >= 0
-        if lower_arr[i] >= 0:
-
-            # if min_index < 0:
-
-            #     min_index = i
-
-            if lower_arr[min_index] > lower_arr[i]:
-
-                # Remove the previous element, since it's no longer the closest value to our lower bound
-                lower_arr = np.delete(lower_arr, min_index, 0)
-                arr = np.delete(arr, min_index, 0)
-                index_list = np.delete(index_list, min_index, 0)
-                # i -= 1
-
-                # This is now the closest value to our lower bound
-                min_index = i - 1
-
-            else:
-
-                # Remove our current element, since the value at min_index is closer to the lower bound
-                lower_arr = np.delete(lower_arr, i, 0)
-                arr = np.delete(arr, i, 0)
-                index_list = np.delete(index_list, i, 0)
-
-                # Note: We don't need to subtract 1 from i in this case, because we're deleting the value that were at
-
-        else:
-
-            i += 1
-
-    # arr has changed, so just subtract upper_bound from the array to get the upper_arr.
-    # This saves time, because we don't have to go through elements that were already deleted
-    upper_arr = arr - upper_bound
-
-    max_index = 0
-
-    # Make sure min_index doesn't start on a negative value, since that wouldn't make sense
-    while max_index < len(upper_arr) and upper_arr[max_index] < 0:
-
-        max_index += 1
-
-    i = max_index + 1
-
-    while i < len(upper_arr):
-
-        # Only check if the current value is >= 0
-        if upper_arr[i] >= 0:
-
-            if upper_arr[max_index] > upper_arr[i]:
-
-                # We must check to see if deleting the value at max_index changes min_index
-                # Note: Maintaining the min_index isn't important for what we're doing, which is why
-                #       I commented this out
-                # if max_index < min_index:
-
-                #     min_index -= 1
-
-                # Remove the previous element, since it's no longer the closest value to our upper bound
-                upper_arr = np.delete(upper_arr, max_index, 0)
-                arr = np.delete(arr, max_index, 0)
-                index_list = np.delete(index_list, max_index, 0)
-                # i -= 1
-
-                # This is now the closest value to our upper bound
-                max_index = i - 1
-
-            else:
-
-                # This uses the same reasoning as the above "if" block
-                # if i < min_index:
-
-                #     min_index -= 1
-
-                # Remove our current element, since the value at min_index is closer to the upper bound
-                upper_arr = np.delete(upper_arr, i, 0)
-                arr = np.delete(arr, i, 0)
-                index_list = np.delete(index_list, i, 0)
-
-        else:
-
-            i += 1
-
-    return index_list, arr
