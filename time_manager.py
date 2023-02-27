@@ -4,6 +4,24 @@ import os
 from methods import *
 import config_files as cf
 
+# TEST
+from task import *
+schedule = Schedule()
+task_info1 = Task_Information("test", "test", 1, 1, 1, 1, True)
+task_info1.create_lines()
+task_info2 = Task_Information("hello", "test", 1, 1, 1, 1, True)
+task_info2.create_lines()
+schedule.add_task(task_info1)
+schedule.add_task(task_info2)
+schedule.to_file()
+schedule = schedule.from_file()
+
+schedule.print_names()
+
+schedule.remove(schedule[0])
+schedule.print_names()
+# TEST
+
 
 def running_code():
     # INSERT CONFIG
