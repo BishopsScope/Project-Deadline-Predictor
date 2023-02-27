@@ -40,10 +40,6 @@ class Schedule:
     def add_task(self, task):
         self.schedule_list.append(task)
 
-    def print_namees(self):
-        for task in self.schedule_list:
-            print(task.task_name())
-
     def remove_task(self, task_name):
 
         for i in range(len(self.schedule_list)):
@@ -53,10 +49,16 @@ class Schedule:
                 # Remove the task with the same name as task_name
                 del self.schedule_list[i]
 
-        # self.schedule_list.remove(task)
-
-    def start_task(self, task):
+    def start_task(self):
         pass
+
+    def tasks(self):
+        return self.schedule_list
+
+    # TODO: Need to make this function interact with the front end
+    def print_names(self):
+        for task in self.schedule_list:
+            print(task.task_name())
 
     def to_file(self):
         """ Write schedule to pickle file """

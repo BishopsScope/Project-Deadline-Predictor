@@ -14,12 +14,10 @@ task_info2.create_lines()
 schedule.add_task(task_info1)
 schedule.add_task(task_info2)
 schedule.to_file()
-schedule = schedule.from_file()
-
 schedule.print_names()
+schedule.from_file()
+schedule.remove_task(task_info1)
 
-schedule.remove(schedule[0])
-schedule.print_names()
 # TEST
 
 
