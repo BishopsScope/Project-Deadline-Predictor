@@ -6,25 +6,25 @@ import os
 import decimal
 
 
-def file_exists(filename):
-    """ Check if the file exists """
+# def file_exists(filename):
+#     """ Check if the file exists """
 
-    if os.path.exists(filename):
-        # Load previous data
-        user_input_data = np.loadtxt(filename, delimiter=',')
+#     if os.path.exists(filename):
+#         # Load previous data
+#         user_input_data = np.loadtxt(filename, delimiter=',')
 
-        # There's no need for a time_amt since we've already collected data
-        time_amt = None
+#         # There's no need for a time_amt since we've already collected data
+#         # time_amt = None
 
-    else:
-        # Create a new array
-        user_input_data = np.array([])
+#     else:
+#         # Create a new array
+#         user_input_data = np.array([])
 
-        # We haven't collected data yet, so we need the user to guess the first amount of time
-        time_amt = float(input(
-            "Since the dataset is new, how many time units (in minutes) do you expect to complete this task? "))
+#         # We haven't collected data yet, so we need the user to guess the first amount of time
+#         # time_amt = float(input(
+#         #    "Since the dataset is new, how many time units (in minutes) do you expect to complete this task? "))
 
-    return user_input_data, time_amt
+#     return user_input_data  # , time_amt
 
 
 def save_file(filename, user_input_data):

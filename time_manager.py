@@ -6,10 +6,11 @@ import config_files as cf
 
 # TEST
 from task import *
+from computation import *
 schedule = Schedule()
-task_info1 = Task_Information("test", "test", 1, 1, 1, 1, True)
+task_info1 = Task_Information("Read Book", "reading", 1, 1, 1, 1, True)
 task_info1.create_lines()
-task_info2 = Task_Information("hello", "test", 1, 1, 1, 1, True)
+task_info2 = Task_Information("Write Paper", "writing", 1, 1, 1, 1, True)
 task_info2.create_lines()
 schedule.add_task(task_info1)
 schedule.add_task(task_info2)
@@ -18,6 +19,9 @@ schedule.print_names()
 schedule.from_file()
 schedule.remove_task(task_info1)
 
+
+test = Computation(task_info1)
+print(test.file_name)
 # TEST
 
 
@@ -33,7 +37,8 @@ def running_code():
     np.set_printoptions(precision=14, suppress=True)
 
     # FILE_EXISTS FUNCTION WAS DEFINED HERE
-    user_input_data, time_amt = file_exists(filename)
+    # user_input_data, time_amt = file_exists(filename)
+    # user_input_data = file_exists(filename)
 
     # USER_QUESTION FUNCTION WAS DEFINED HERE
     num_lines, num_segments, num_iterations = user_questions()
@@ -43,8 +48,8 @@ def running_code():
     start_time = datetime.now()
 
     # CONDITIONS_MET FUNCTION WAS DEFINED HERE
-    lines = conditions_met(time_amt, user_input_data,
-                           num_lines, num_segments, num_iterations)
+    # lines = conditions_met(time_amt, user_input_data,
+    #                        num_lines, num_segments, num_iterations)
 
     # CREATE A FUNCTION HERE UNTIL THE END OF THIS FILE CALLED "start_program"
 

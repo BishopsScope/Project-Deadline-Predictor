@@ -1,35 +1,70 @@
 import pickle
 import config_files as cf
 from methods import *
+import os
 
 #########################################################
 # THIS IS THE CLASS FOR GETTING THE INFORMATION
-# THIS IS CURRENTLY NOT BEING USED IN THE MAIN PORTION AND NEEDS TO BE INCLUDED
 
 
 class Task_Information:
-    def __init__(self, name, category, time_amt, num_lines, num_segments, num_iterations, display_lines):
+    def __init__(self, name, category, num_lines, num_segments, num_iterations, display_lines):
         self.name = name
         self.category = category
-        self.time_amt = time_amt
         self.num_lines = num_lines
+        # The following variable is for storing how many segments have been completed
+        # (Note: It will only be used on the front end and not the graphical plot.
+        #        The graphical plot will only use num_segments)
+        self.num_completed_segments = 0
         self.num_segments = num_segments
         self.num_iterations = num_iterations
         self.display_lines = display_lines
 
-        self.filename = f"csv_files/{cf.FILE_NAME}"
-        self.user_input_data = np.array([])
+        self.filename = f"csv_files/{category}.csv"
+        # self.user_input_data = np.array([])
+        self.user_input_data = self.file_exists()
+
+    def file_exists(self):
+        """ Check if the file exists """
+
+        if os.path.exists(self.filename):
+            # Load previous data
+            self.user_input_data = np.loadtxt(self.filename, delimiter=',')
+
+        else:
+            # Create a new array
+            self.user_input_data = np.array([])
 
     def task_name(self):
         return self.name
 
-    def create_lines(self):
-        self.lines = conditions_met(self.time_amt, self.user_input_data,
-                                    self.num_lines, self.num_segments, self.num_iterations)
-# THIS IS A TEST FOR THE CLASS
-# test = Task_Information()
-# print(test.filename)
-# s
+    def category_type(self):
+        return self.category
+
+    def line_count(self):
+        return self.num_lines
+
+    def num_subtasks(self):
+        return self.num_segments
+
+    def decrement_subtasks(self):
+        if self.num_segments != 0:
+            self.num_segments -= 1
+
+    def iterations(self):
+        return self.num_iterations
+
+    def display_plot(self):
+        return self.display_lines
+
+    def file(self):
+        return self.filename
+
+    def data(self):
+        return self.user_input_data
+
+    def set_data(self, new_data):
+        self.user_input_data = new_data
 
 
 class Schedule:
