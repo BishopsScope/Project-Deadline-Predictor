@@ -1,6 +1,8 @@
 from task import *
 import numpy as np
 from datetime import datetime
+from sklearn import linear_model
+import matplotlib.pyplot as plt
 
 
 class Computation():
@@ -35,6 +37,8 @@ class Computation():
         # Initially, the previous time is the starting time and the previous segment is None
         self.prev_time = self.start_time
 
+        print("Initial data: ",str(self.task.data()))
+
         for i in range(1, self.task.num_subtasks() + 1):
             # Store the new prev_time and prev_seg from the newly collected segment data from the user
             # prev_time - The clock time when the last segment was completed
@@ -45,6 +49,7 @@ class Computation():
             # Note: total_seconds() converts the time difference to seconds and then we divide by 60 to convert it to mins
             # prev_seg_mins - The number of minutes between the prior and currently completed segment
             self.prev_seg_mins = self.prev_seg.total_seconds() / 60
+            print(self.prev_seg_mins)
 
             self.delta_time()
 
@@ -53,23 +58,27 @@ class Computation():
             self.task.set_data(
                 np.append(self.task.data(), [self.prev_seg_mins]))
 
+            # self.task.set_data(
+            #     np.delete(self.task.data(), [0]))
+
             print("Recreating " + str(self.task.line_count()) +
                   " lines from the user data...")
-            print("New Standard Deviation = " + str(self.task.data().std()))
-            print("New Mean = " + str(self.task.data().mean()))
-            print()
+            print(self.task.data())
+            if self.task.data().all() != None:
+                print("New Standard Deviation = " + str(self.task.data().std()))
+                print("New Mean = " + str(self.task.data().mean()))
+                print()
 
             # print("All of your data since conception: " + str(user_input_data))
 
             # Train and print the new lines
-            train_lines_2(i)
+            self.train_lines_2(i)
 
             # Check if the user wants to see lines displayed or not
             if self.task.display_plot():
                 # This is the first set of lines we plot
                 print("Plotting Lines ...")
-                plot_lines(self.lines, self.task.num_subtasks(),
-                           self.prev_time_mins, i)
+                self.plot_lines(i)
 
             # Get the endpoints for where each line intersects the y = num_segments line
 
@@ -104,15 +113,9 @@ class Computation():
 
         print(os.system("pause"))
 
-    def read_csv(self):
-        pass
-
     def write_csv(self):
         np.savetxt(self.task.file(),
                    self.task.user_input_data, delimiter=',')
-
-    def predict_lines(self):
-        pass
 
     # REMOVE CHOICE WHEN IMPLEMENTING GUI
     def get_segment(self):
@@ -177,6 +180,9 @@ class Computation():
             # This means we need to save the current time difference between the previous clock and current clock
             elif choice == 'c':
                 break
+
+        self.prev_time = self.curr_time
+        self.prev_seg = self.curr_seg
 
     def retrieve_endpoints(self):
         """ Retrieve the endpoints of the lines """
@@ -276,3 +282,62 @@ class Computation():
                 (self.lines[line].coef_ * self.prev_time_mins)
             # print("Y Intercept: " + str(lines[line].intercept_))
             # print("Slope: " + str(lines[line].coef_))
+
+    def plot_lines(self, curr_y_seg=0):
+        """ Plot the lines """
+
+        # This function plots the newly formed lines after performing least squares upon the
+        # completion of each segment.
+
+        # Note: This function assumes each function is linear, so x^2, x^3 ... won't work
+
+        # lines: a list of numpy lines
+        # max_y: num_segments; the maximum y value
+        # x_values: the x value of the intersection between the line y = max_y and each line
+
+        x_values = np.array([])
+
+        # Get all lines at the remaining indexes and save their y values when y = num_segments
+        for line_index in range(len(self.lines)):
+
+            # Note that we're appending -num_segments because we need to shift each curve down
+            # by num_segments to align it with the x-axis so we can find the roots
+            coefficients = np.append(np.flip(self.lines[line_index].coef_, 0), -self.task.num_subtasks())
+
+            # Get all roots (including imaginary roots, except in this particular function there are no imaginary roots)
+            coef_roots = np.roots(coefficients)
+
+            # Append the root of the current line
+            x_values = np.append(x_values, coef_roots)
+
+        # Check if the lengths of the two arrays are the same
+        if len(x_values) != len(self.lines):
+            print("Error!")
+            print("Length of x_values: " + str(len(x_values)))
+            print("Length of lines: " + str(len(self.lines)))
+
+            exit(1)
+
+        # Get the maximum x value to determine the x bound for the window
+        max_x = np.max(x_values)
+
+        # Extract each line in the list of lines
+        for line_index in range(len(self.lines)):
+
+            # Note: We have two values here (our current x position in time and the x-value of where
+            #       the line intersects num_segments) because we need two x points (and two y points)
+            #       in order to plot a line.
+            x = np.array([0, x_values[line_index]])
+
+            # Plot the line
+            plt.plot(x, self.lines[line_index].predict(x.reshape(-1, 1)))
+
+        # Set the upper y and x bounds
+        plt.xlim(0, max_x)
+        plt.ylim(0, self.task.num_subtasks())
+        plt.grid()
+        plt.plot(self.prev_time_mins, curr_y_seg, marker="o",
+                markersize=15, markeredgecolor="blue", markerfacecolor="orange")
+
+        # Show the plot
+        plt.show()

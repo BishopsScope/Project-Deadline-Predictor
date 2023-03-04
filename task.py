@@ -1,6 +1,6 @@
 import pickle
 import config_files as cf
-from methods import *
+from computation import *
 import os
 
 #########################################################
@@ -8,7 +8,7 @@ import os
 
 
 class Task_Information:
-    def __init__(self, name, category, num_lines, num_segments, num_iterations, display_lines):
+    def __init__(self, name, category, num_segments, display_lines=False, num_lines=15, num_iterations=50):
         self.name = name
         self.category = category
         self.num_lines = num_lines
@@ -22,7 +22,7 @@ class Task_Information:
 
         self.filename = f"csv_files/{category}.csv"
         # self.user_input_data = np.array([])
-        self.user_input_data = self.file_exists()
+        self.file_exists()
 
     def file_exists(self):
         """ Check if the file exists """
@@ -69,23 +69,58 @@ class Task_Information:
 
 class Schedule:
     def __init__(self):
-        self.schedule_list = []
         self.pickle_file = "schedule/schedule.pckl"
+        self.from_file()
 
     def add_task(self, task):
-        self.schedule_list.append(task)
+
+        i = 0
+
+        does_exist = False
+        
+        while i < len(self.schedule_list):
+
+            if self.schedule_list[i].task_name() == task.task_name():
+
+                does_exist = True
+                break
+            
+            else:
+
+                i += 1
+                
+        if not does_exist:
+
+            self.schedule_list.append(task)
+            self.to_file()
 
     def remove_task(self, task_name):
 
-        for i in range(len(self.schedule_list)):
+        i = 0
+
+        while i < len(self.schedule_list):
 
             if self.schedule_list[i].task_name() == task_name:
 
                 # Remove the task with the same name as task_name
                 del self.schedule_list[i]
+            
+            else:
 
-    def start_task(self):
-        pass
+                i += 1
+
+        self.to_file()
+
+    def start_task(self, task_name):
+
+        for i in range(len(self.schedule_list)):
+
+            if self.schedule_list[i].task_name() == task_name:
+        
+                comp = Computation(self.schedule_list[i])
+                break
+
+        comp.running_code()
 
     def tasks(self):
         return self.schedule_list
@@ -106,6 +141,6 @@ class Schedule:
         try:
             with open(self.pickle_file, "rb") as file_handle:
                 self.schedule_list = pickle.load(file_handle)
-            return self.schedule_list
-        except EOFError:
-            return list()
+            # return self.schedule_list
+        except:
+            self.schedule_list = []
