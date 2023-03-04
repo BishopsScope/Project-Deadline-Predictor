@@ -8,7 +8,7 @@ import os
 
 
 class Task_Information:
-    def __init__(self, name, category, num_segments, display_lines=False, num_lines=15, num_iterations=50):
+    def __init__(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50):
         self.name = name
         self.category = category
         self.num_lines = num_lines
