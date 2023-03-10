@@ -23,12 +23,12 @@ class Computation():
         if self.task.file_exists():
 
             print("The file exists! Loading it into data...")
-            print(self.task.data())
+            # print(self.task.data())
         
         else:
 
             print("The file doesn't exist!")
-            print(self.task.data())
+            # print(self.task.data())
 
         # INSERT CONFIG
         np.set_printoptions(precision=14, suppress=True)
@@ -48,11 +48,9 @@ class Computation():
         # Initially, the previous time is the starting time and the previous segment is None
         self.prev_time = self.start_time
 
-        print("Initial data: ",str(self.task.data()))
-
         for i in range(1, self.task.num_subtasks() + 1):
 
-            print("Data: " + str(self.task.data()))
+            # print("Data: " + str(self.task.data()))
 
             # Store the new prev_time and prev_seg from the newly collected segment data from the user
             # prev_time - The clock time when the last segment was completed
