@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # print(schedule.tasks())
     # schedule.add_task(task_info1)
-    schedule.start_task("Read history book ch 1")
+    schedule.start_task("Reading History")
 
 
     # task_info2 = Task_Information("Write Paper", "writing", 5, True)

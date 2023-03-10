@@ -30,10 +30,12 @@ class Task_Information:
         if os.path.exists(self.filename):
             # Load previous data
             self.user_input_data = np.loadtxt(self.filename, delimiter=',')
+            return True
 
         else:
             # Create a new array
             self.user_input_data = np.array([])
+            return False
 
     def task_name(self):
         return self.name

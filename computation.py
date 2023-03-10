@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime
 from sklearn import linear_model
 import matplotlib.pyplot as plt
+import os
 
 
 class Computation():
@@ -18,6 +19,16 @@ class Computation():
         self.end_points = np.array([])
 
     def running_code(self):
+
+        if self.task.file_exists():
+
+            print("The file exists! Loading it into data...")
+            print(self.task.data())
+        
+        else:
+
+            print("The file doesn't exist!")
+            print(self.task.data())
 
         # INSERT CONFIG
         np.set_printoptions(precision=14, suppress=True)
@@ -40,6 +51,9 @@ class Computation():
         print("Initial data: ",str(self.task.data()))
 
         for i in range(1, self.task.num_subtasks() + 1):
+
+            print("Data: " + str(self.task.data()))
+
             # Store the new prev_time and prev_seg from the newly collected segment data from the user
             # prev_time - The clock time when the last segment was completed
             # prev_seg - The time difference between the most current segment that's been completed
@@ -111,7 +125,7 @@ class Computation():
 
         print("Done!")
 
-        print(os.system("pause"))
+        os.system("pause")
 
     def write_csv(self):
         np.savetxt(self.task.file(),
