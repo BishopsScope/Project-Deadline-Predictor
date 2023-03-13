@@ -14,6 +14,10 @@
         display: block;
         margin: 0 auto;
       }
+      .task_list{
+        text-align: center;
+        list-style-type: none;
+      }
       .display_info{
         margin: 50px;
         font-size: 15px;
@@ -22,7 +26,7 @@
       .text_box{
         margin: 50px;
         font-size: 15px;
-        text-align: left;
+        text-align: center;
       }
     </style>
   </head>
@@ -30,18 +34,18 @@
     <h1>Keep Track of Your Time</h1>
 
     <div class="text_box">
-      <form action="/action_page.php">
+      <form>
+        <label for="category">Category Name:</label>
+        <input type="text" id="category" name="category" placeholder="Category name"><br>
+
         <label for="taskname">Task Name:</label>
         <input type="text" id="taskname" name="taskname" placeholder="Task name"><br>
-        
-        <label for="timeamt">Average Time:</label>
-        <input type="text" id="timeamt" name="timeamt" placeholder="Average time per segment"><br>
-
-        <label for="numline">Lines:</label>
-        <input type="text" id="numline" name="numline" placeholder="Number of lines"><br>
 
         <label for="segments">Segments:</label>
         <input type="text" id="segments" name="segments" placeholder="Number of segments"><br>
+
+        <label for="numline">Lines:</label>
+        <input type="text" id="numline" name="numline" placeholder="Number of lines"><br>
 
         <label for="iterations">Iterations:</label>
         <input type="text" id="iterations" name="iterations" placeholder="Number of iterations"><br>
@@ -49,24 +53,13 @@
         <label for="displayplot">Display Plot:</label>
         <input type="checkbox" id="displayplot" name="displayplot" value="Plot">
 
-        <label for="category">Category:</label>
-        <select name="category" id="category">
-          <option value="reading">Reading</option>
-          <option value="homework">Homework</option>
-          <option value="work">Work</option>
-          <option value="other">Other...</option>
-        </select>
-
-        <input type="button" class="submit" value="Submit" onclick="display_number()">
+        <input type="button" class="submit" value="Submit" onclick="create_task()">
       </form>
     </div>
 
     <h1>Tasks</h1>
-
+    <ul  class="task_list" id="myUl"></ul>
     <div class="display_info" id="taskname_dis"></div>
-    <div class="display_info" id="segment_dis"></div>
-    <div class="display_info" id="cate_dis"></div>
-
 
     <script type="text/javascript" src="../eel.js"></script>
     <script src="./script.js"></script>

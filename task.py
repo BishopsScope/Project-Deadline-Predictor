@@ -131,6 +131,12 @@ class Schedule:
     def print_names(self):
         for task in self.schedule_list:
             print(task.task_name())
+            
+    def list_names(self):
+        task_list = []
+        for task in self.schedule_list:
+            task_list.append(task.task_name())
+        return task_list
 
     def to_file(self):
         """ Write schedule to pickle file """
