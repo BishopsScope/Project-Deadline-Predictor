@@ -1,11 +1,16 @@
 import pickle
-import config_files as cf
 from computation import *
+import numpy as np
 import os
 
 #########################################################
 # THIS IS THE CLASS FOR GETTING THE INFORMATION
 
+main_folder ="TimeManager"
+user_home = os.path.expanduser('~')
+main_directory = os.path.join(user_home, main_folder)
+if not os.path.exists(main_directory):
+    os.makedirs(main_directory)
 
 class Task_Information:
     def __init__(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50):
@@ -19,9 +24,10 @@ class Task_Information:
         self.num_segments = num_segments
         self.num_iterations = num_iterations
         self.display_lines = display_lines
-
-        self.filename = f"csv_files/{category}.csv"
-        # self.user_input_data = np.array([])
+        csv_directory = os.path.join(main_directory, "csv_files")
+        if not os.path.exists(csv_directory):
+            os.makedirs(csv_directory)
+        self.filename= os.path.join(csv_directory, f"{category}.csv")
         self.file_exists()
 
     def file_exists(self):
@@ -71,7 +77,10 @@ class Task_Information:
 
 class Schedule:
     def __init__(self):
-        self.pickle_file = "schedule/schedule.pckl"
+        pickle_directory = os.path.join(main_directory, "schedule")
+        if not os.path.exists(pickle_directory):
+            os.makedirs(pickle_directory)
+        self.pickle_file = os.path.join(pickle_directory, "schedule.pckl")
         self.from_file()
 
     def add_task(self, task):

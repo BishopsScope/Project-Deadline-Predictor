@@ -5,35 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Time Manager</title>
-    <style>
-      h1{
-        color: blue;
-        text-align: center;
-      }
-      button{
-        display: block;
-        margin: 0 auto;
-      }
-      .task_list{
-        text-align: center;
-        list-style-type: none;
-      }
-      .display_info{
-        margin: 50px;
-        font-size: 15px;
-        text-align: center;
-      }
-      .text_box{
-        margin: 50px;
-        font-size: 15px;
-        text-align: center;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <h1>Keep Track of Your Time</h1>
 
-    <div class="text_box">
+    <div>
       <form>
         <label for="category">Category Name:</label>
         <input type="text" id="category" name="category" placeholder="Category name"><br>
@@ -42,15 +19,15 @@
         <input type="text" id="taskname" name="taskname" placeholder="Task name"><br>
 
         <label for="segments">Segments:</label>
-        <input type="text" id="segments" name="segments" placeholder="Number of segments"><br>
+        <input type="text" id="segments" name="segments" placeholder="Number of segments" pattern="\d+" title="Please enter a number"><br>
 
         <label for="numline">Lines:</label>
-        <input type="text" id="numline" name="numline" placeholder="Number of lines"><br>
+        <input type="text" id="numline" name="numline" placeholder="Number of lines" pattern="\d+" title="Please enter a number"><br>
 
         <label for="iterations">Iterations:</label>
-        <input type="text" id="iterations" name="iterations" placeholder="Number of iterations"><br>
+        <input type="text" id="iterations" name="iterations" placeholder="Number of iterations" pattern="\d+" title="Please enter a number"><br>
 
-        <label for="displayplot">Display Plot:</label>
+        <label for="displayplot">Display Plot (optional):</label>
         <input type="checkbox" id="displayplot" name="displayplot" value="Plot">
 
         <input type="button" class="submit" value="Submit" onclick="create_task()">
@@ -58,9 +35,7 @@
     </div>
 
     <h1>Tasks</h1>
-    <ul  class="task_list" id="myUl"></ul>
-    <div class="display_info" id="taskname_dis"></div>
-
+    <ul class="display_tasks" id="myUl"></ul>
     <script type="text/javascript" src="../eel.js"></script>
     <script src="./script.js"></script>
   </body>

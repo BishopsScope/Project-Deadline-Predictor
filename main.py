@@ -12,8 +12,7 @@ class Adapter:
         self.task_info1 = None
 
     def create_task(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50):
-
-        self.task_info1 = Task_Information(category, name, num_segments, display_lines, num_lines, num_iterations)
+        self.task_info1 = Task_Information(str(category), str(name), int(num_segments), display_lines, int(num_lines), int(num_iterations))
         self.schedule.add_task(self.task_info1)
         # print("task created")
         # print(self.schedule.list_names())
@@ -23,6 +22,13 @@ class Adapter:
 
         return self.schedule.list_names()
 
+    def delete_task(self, task_name):
+
+        self.schedule.remove_task(task_name)
+
+    def start_task(self, task_name):
+
+        self.schedule.start_task(task_name)
 
 if __name__ == '__main__':
     eel.init("view")
@@ -31,6 +37,8 @@ if __name__ == '__main__':
     obj = Adapter()
     eel.expose(obj.create_task)
     eel.expose(obj.get_tasks)
+    eel.expose(obj.delete_task)
+    eel.expose(obj.start_task)
     # schedule = Schedule()
     # Naming: category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50
     # task_info1 = Task_Information("Reading History", "Read history book ch 1", 5, True)
@@ -78,4 +86,4 @@ if __name__ == '__main__':
 
     #     return 
 
-    eel.start("index.html",  size=(500, 500), host="127.0.0.1")
+    eel.start("index.html",  size=(500, 550), host="127.0.0.1")
