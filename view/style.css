@@ -63,7 +63,7 @@ li{
     justify-content: space-between;
     align-items: center;
 }
-.startTask {
+.startButton {
     background-color: #2bb132;
     color: white;
     cursor: pointer;
@@ -71,17 +71,17 @@ li{
     border: none;
     align-items: right;
 }
-.startTask:hover {
+.startButton:hover {
     background-color: #4cba52;
 }
-.deleteTask {
+.deleteButton {
     background-color: #d34136;
     color: white;
     cursor: pointer;
     border-radius: 4px;
     border: none;
 }
-.deleteTask:hover {
+.deleteButton:hover {
     background-color: #e73b2e;
 }
   

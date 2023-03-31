@@ -14,18 +14,52 @@
 //   }
 // }
 // window.addEventListener("resize", prevent_resize);
-updateTaskList();
 
-function startTaskTest(taskName) {
-  // Remove console.log
-  console.log("Start Task: " + taskName);
-  eel.start_task(taskName)
+
+window.addEventListener("DOMContentLoaded", function() {
+  // Check if the current page is index.html
+  if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
+    updateTaskList();
+  }
+  if (window.location.pathname.endsWith("task.html") || window.location.pathname === "/") {
+    displayTaskInfo();
+  }
+});
+
+function displayTaskInfo() {
+  var taskName = localStorage.getItem("taskName");
+  console.log(taskName)
+  document.getElementById("task-name").innerHTML = "Task: " + taskName;
+  eel.start_task(taskName);
+  // eel.task_info(taskName)(function(ret) {
+  //   document.getElementById("task-info").innerHTML = ret;
+  // })
+  // if (taskName) {
+  //     document.getElementById("task-name").innerHTML = taskName;
+  // }
 }
 
-function deleteTaskTest(taskName) {
+function taskScreen(taskName) {
+  // window.location.href = "task.html";
+  localStorage.setItem("taskName", taskName);
+  window.location.href = "task.html";
+  // displayTaskName();
+}
+
+function createTaskScreen() {
+  window.location.href = "index.html";
+}
+
+// function startTask(taskName) {
+//   // Remove console.log
+//   console.log("Start Task: " + taskName);
+//   eel.start_task(taskName)
+// }
+
+function deleteTask(taskName) {
   // Remove console.log
   console.log("Delete Task: " + taskName);
-  eel.delete_task(taskName)
+  eel.delete_task(taskName);
   updateTaskList();
 }
 
@@ -42,24 +76,25 @@ function updateTaskList() {
       li.appendChild(text);
 
       // Create the start and delete buttons
-      var startTask = document.createElement("button");
-      startTask.innerHTML = "Start";
-      startTask.classList.add("startTask");
+      var startButton = document.createElement("button");
+      startButton.innerHTML = "Start";
+      startButton.classList.add("startButton");
       // Once clicked, we have a test function the does a console log of the name
-      startTask.onclick = function() {
-        startTaskTest(ret[i]);
+      startButton.onclick = function() {
+        // startTask(ret[i]);
+        taskScreen(ret[i]);
       };
 
-      var deleteTask = document.createElement("button");
-      deleteTask.innerHTML = "Delete";
-      deleteTask.classList.add("deleteTask");
+      var deleteButton = document.createElement("button");
+      deleteButton.innerHTML = "Delete";
+      deleteButton.classList.add("deleteButton");
       // Once clicked, we have a test function the does a console log of the name
-      deleteTask.onclick = function() {
-        deleteTaskTest(ret[i]);
+      deleteButton.onclick = function() {
+        deleteTask(ret[i]);
       };
 
-      li.appendChild(startTask);
-      li.appendChild(deleteTask);
+      li.appendChild(startButton);
+      li.appendChild(deleteButton);
       
       document.getElementById("myUl").appendChild(li);
     }
@@ -81,7 +116,7 @@ function correctInput() {
   return validInput;
 }
 
-function create_task() {
+function createTask() {
   // Naming: category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50
   var category = document.getElementById("category").value;
   var task_name = document.getElementById("taskname").value;

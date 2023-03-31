@@ -30,6 +30,15 @@ class Adapter:
 
         self.schedule.start_task(task_name)
 
+    # def task_info(self, task_name):
+    #     computation = Computation(task_name)
+    #     return computation.task
+
+    # def get_segment(self, task_name):
+    #     computation = Computation(task_name)
+    #     computation.get_segment()
+    #     return computation.prev_time, computation.prev_seg
+
 if __name__ == '__main__':
     eel.init("view")
 
@@ -39,6 +48,7 @@ if __name__ == '__main__':
     eel.expose(obj.get_tasks)
     eel.expose(obj.delete_task)
     eel.expose(obj.start_task)
+    # eel.expose(obj.task_info)
     # schedule = Schedule()
     # Naming: category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50
     # task_info1 = Task_Information("Reading History", "Read history book ch 1", 5, True)

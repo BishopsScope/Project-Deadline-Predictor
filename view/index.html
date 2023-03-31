@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Time Manager</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <h1>Keep Track of Your Time</h1>
-
     <div>
-      <form>
+      <form id="form">
         <label for="category">Category Name:</label>
         <input type="text" id="category" name="category" placeholder="Category name"><br>
 
@@ -30,10 +30,9 @@
         <label for="displayplot">Display Plot (optional):</label>
         <input type="checkbox" id="displayplot" name="displayplot" value="Plot">
 
-        <input type="button" class="submit" value="Submit" onclick="create_task()">
+        <input type="button" class="submit" value="Submit" onclick="createTask()">
       </form>
     </div>
-
     <h1>Tasks</h1>
     <ul class="display_tasks" id="myUl"></ul>
     <script type="text/javascript" src="../eel.js"></script>
