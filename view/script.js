@@ -26,11 +26,28 @@ window.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+function startTask() {
+  var taskName = localStorage.getItem("taskName");
+  // console.log(taskName)
+  var startButton = document.getElementById("start");
+  startButton.disabled = true;
+
+  var nextButton = document.createElement("button");
+  nextButton.innerHTML = "Next Segment";
+  nextButton.classList.add("nextButton");
+  nextButton.onclick = function() {
+    //ADD FUNCTIONALITY
+    alert(taskName);
+  };
+  document.getElementById("myUl").appendChild(nextButton);
+
+  eel.start_task(taskName);
+}
+
 function displayTaskInfo() {
   var taskName = localStorage.getItem("taskName");
-  console.log(taskName)
+  // console.log(taskName)
   document.getElementById("task-name").innerHTML = "Task: " + taskName;
-  eel.start_task(taskName);
   // eel.task_info(taskName)(function(ret) {
   //   document.getElementById("task-info").innerHTML = ret;
   // })
