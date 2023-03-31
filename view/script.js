@@ -29,6 +29,9 @@ window.addEventListener("DOMContentLoaded", function() {
 function startTask() {
   var taskName = localStorage.getItem("taskName");
   // console.log(taskName)
+  // TODO: Move this out of start and put it somewhere else
+  //       so that the time isn't restarted every time the
+  //       user resumes a task
   eel.setup_computation(taskName);
   var startButton = document.getElementById("start");
   startButton.disabled = true;
