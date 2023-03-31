@@ -6,10 +6,15 @@ import matplotlib.pyplot as plt
 import os
 
 
+
 class Computation():
+
+    np.set_printoptions(precision=14, suppress=True)
+
     def __init__(self, task):
         self.task = task
         self.lines = []
+        # Plans in the future to include pause and resume functionality (involving self.start_time)
         self.start_time = None
         self.prev_time = None
         self.prev_time_mins = 0
@@ -17,7 +22,27 @@ class Computation():
         self.prev_seg = None
         self.prev_seg_mins = 0
         self.end_points = np.array([])
+        self.curr_seg_num = 0
 
+    # Must call this method before calling next segment.
+    # This function should only be called once at the start
+    # of the task.
+    def reset_start_time(self):
+
+        self.start_time = datetime.now()
+        self.prev_time = self.start_time
+
+    # TODO: Handle bool return inside JavaScript:
+    # When True, do nothing
+    # When False, change the "Next Segment" button to be "Complete"
+    def next_segment(self):
+        if self.curr_seg_num < self.task.num_subtasks():
+            self.curr_seg_num += 1
+            self.running_code()
+            return True
+
+        return False
+        
     def running_code(self):
 
         if self.task.file_exists():
@@ -31,13 +56,13 @@ class Computation():
             # print(self.task.data())
 
         # INSERT CONFIG
-        np.set_printoptions(precision=14, suppress=True)
+        
 
         # TODO: Make sure the num_lines, num_segments and num_iterations have been inputted by this line
 
         # PUT IN A CLASS
         # Save the current time as a point of reference for determining intervals that change over time
-        self.start_time = datetime.now()
+        # self.start_time = datetime.now()
 
         # CONDITIONS_MET FUNCTION WAS DEFINED HERE
         # lines = conditions_met(time_amt, user_input_data,
@@ -46,84 +71,84 @@ class Computation():
         # CREATE A FUNCTION HERE UNTIL THE END OF THIS FILE CALLED "start_program"
 
         # Initially, the previous time is the starting time and the previous segment is None
-        self.prev_time = self.start_time
+        # self.prev_time = self.start_time
 
-        for i in range(1, self.task.num_subtasks() + 1):
+        # for i in range(1, self.task.num_subtasks() + 1):
 
-            # print("Data: " + str(self.task.data()))
+        # print("Data: " + str(self.task.data()))
 
-            # Store the new prev_time and prev_seg from the newly collected segment data from the user
-            # prev_time - The clock time when the last segment was completed
-            # prev_seg - The time difference between the most current segment that's been completed
-            #            and the one prior to that one.
-            self.get_segment()
+        # Store the new prev_time and prev_seg from the newly collected segment data from the user
+        # prev_time - The clock time when the last segment was completed
+        # prev_seg - The time difference between the most current segment that's been completed
+        #            and the one prior to that one.
+        self.get_segment()
 
-            # Note: total_seconds() converts the time difference to seconds and then we divide by 60 to convert it to mins
-            # prev_seg_mins - The number of minutes between the prior and currently completed segment
-            self.prev_seg_mins = self.prev_seg.total_seconds() / 60
-            print(self.prev_seg_mins)
+        # Note: total_seconds() converts the time difference to seconds and then we divide by 60 to convert it to mins
+        # prev_seg_mins - The number of minutes between the prior and currently completed segment
+        self.prev_seg_mins = self.prev_seg.total_seconds() / 60
+        print(self.prev_seg_mins)
 
-            self.delta_time()
+        self.delta_time()
 
-            # Append the newest time to our set of data we've collected
-            # user_input_data - The list of segment completion times (originally generated from the CSV)
-            self.task.set_data(
-                np.append(self.task.data(), [self.prev_seg_mins]))
+        # Append the newest time to our set of data we've collected
+        # user_input_data - The list of segment completion times (originally generated from the CSV)
+        self.task.set_data(
+            np.append(self.task.data(), [self.prev_seg_mins]))
 
-            # self.task.set_data(
-            #     np.delete(self.task.data(), [0]))
+        # self.task.set_data(
+        #     np.delete(self.task.data(), [0]))
 
-            print("Recreating " + str(self.task.line_count()) +
-                  " lines from the user data...")
-            print(self.task.data())
-            if self.task.data().all() != None:
-                print("New Standard Deviation = " + str(self.task.data().std()))
-                print("New Mean = " + str(self.task.data().mean()))
-                print()
+        print("Recreating " + str(self.task.line_count()) +
+                " lines from the user data...")
+        print(self.task.data())
+        if self.task.data().all() != None:
+            print("New Standard Deviation = " + str(self.task.data().std()))
+            print("New Mean = " + str(self.task.data().mean()))
+            print()
 
-            # print("All of your data since conception: " + str(user_input_data))
+        # print("All of your data since conception: " + str(user_input_data))
 
-            # Train and print the new lines
-            self.train_lines_2(i)
+        # Train and print the new lines
+        self.train_lines_2(self.curr_seg_num)
 
-            # Check if the user wants to see lines displayed or not
-            if self.task.display_plot():
-                # This is the first set of lines we plot
-                print("Plotting Lines ...")
-                self.plot_lines(i)
+        # Check if the user wants to see lines displayed or not
+        if self.task.display_plot():
+            # This is the first set of lines we plot
+            print("Plotting Lines ...")
+            self.plot_lines(self.curr_seg_num)
 
-            # Get the endpoints for where each line intersects the y = num_segments line
+        # Get the endpoints for where each line intersects the y = num_segments line
 
-            self.retrieve_endpoints()
+        self.retrieve_endpoints()
 
-            # REPLACE WITH return_interval() METHOD
-            # Make sure we have at least one root
-            try:
-                self.return_interval()
+        # REPLACE WITH return_interval() METHOD
+        # Make sure we have at least one root
+        try:
+            self.return_interval()
 
-                print("Predicted Interval: [" + str(self.min_end_point) + "," +
-                      str(self.max_end_point) + "] (cumulative time in minutes)")
-                # For these two times we convert the starting time to a timestamp, add in the number of minutes
-                # for the line with the fastest end time and convert it back to a datetime object.
-                # The same thing happens for the worst case time except we add in the number of minutes for the
-                # slowest end time rather than the fastest end time.
-                print("Best Case Time: " + str(datetime.fromtimestamp(self.start_time_timestamp +
-                                                                      (60 * self.min_end_point)).strftime('%Y/%m/%d %I:%M:%S %p')))
-                print("Worst Case Time: " + str(datetime.fromtimestamp(self.start_time_timestamp +
-                                                                       (60 * self.max_end_point)).strftime('%Y/%m/%d %I:%M:%S %p')))
-            except Exception as e:
-                print(e)
+            print("Predicted Interval: [" + str(self.min_end_point) + "," +
+                    str(self.max_end_point) + "] (cumulative time in minutes)")
+            # For these two times we convert the starting time to a timestamp, add in the number of minutes
+            # for the line with the fastest end time and convert it back to a datetime object.
+            # The same thing happens for the worst case time except we add in the number of minutes for the
+            # slowest end time rather than the fastest end time.
+            print("Best Case Time: " + str(datetime.fromtimestamp(self.start_time_timestamp +
+                                                                    (60 * self.min_end_point)).strftime('%Y/%m/%d %I:%M:%S %p')))
+            print("Worst Case Time: " + str(datetime.fromtimestamp(self.start_time_timestamp +
+                                                                    (60 * self.max_end_point)).strftime('%Y/%m/%d %I:%M:%S %p')))
+        except Exception as e:
+            print(e)
 
-            # Backup the current date we have in a csv file
-            self.write_csv()
+        # Backup the current date we have in a csv file
+        self.write_csv()
 
-            # cont = input("Would you like to continue? (Y/N) ")
-            print("You have completed: " + str(i) + " / " +
-                  str(self.task.num_subtasks()) + " segments\n\n")
+        # cont = input("Would you like to continue? (Y/N) ")
+        print("You have completed: " + str(self.curr_seg_num ) + " / " +
+                str(self.task.num_subtasks()) + " segments\n\n")
 
         print("Done!")
 
-        os.system("pause")
+        # os.system("pause")
 
     def write_csv(self):
         np.savetxt(self.task.file(),
@@ -138,60 +163,60 @@ class Computation():
         # Given the input 'c', this function returns the curr_seg
 
         # We start out not having any choice made by the user
-        choice = None
+        # choice = None
 
-        while choice != 'c':
+        # while choice != 'c':
 
-            choice = input(
-                "Would you like to see i(nfo) or c(omplete a segment)? i or c? ")
+        #     choice = input(
+        #         "Would you like to see i(nfo) or c(omplete a segment)? i or c? ")
 
-            # Get the current time
-            self.curr_time = datetime.now()
+        # Get the current time
+        self.curr_time = datetime.now()
 
-            # Make sure that the previous time isn't AM while the old time is PM (from midnight to morning hours)
-            if ((self.prev_time - self.curr_time).total_seconds() >= 0):
+        # Make sure that the previous time isn't AM while the old time is PM (from midnight to morning hours)
+        if ((self.prev_time - self.curr_time).total_seconds() >= 0):
 
-                self.curr_seg = self.prev_time - self.curr_time
+            self.curr_seg = self.prev_time - self.curr_time
 
-            # Display all metrics including:
-            # Previous Segment, Previous Time, Current Segment and Current Time
-            # This is the case when its PM to AM
-            else:
-                self.curr_seg = self.curr_time - self.prev_time
+        # Display all metrics including:
+        # Previous Segment, Previous Time, Current Segment and Current Time
+        # This is the case when its PM to AM
+        else:
+            self.curr_seg = self.curr_time - self.prev_time
 
-            if choice == 'i':
+            # if choice == 'i':
 
-                if ((self.start_time - self.curr_time).total_seconds() >= 0):
+            #     if ((self.start_time - self.curr_time).total_seconds() >= 0):
 
-                    # Conception time is the time that has elapsed
-                    self.conception_time = self.start_time - self.curr_time
+            #         # Conception time is the time that has elapsed
+            #         self.conception_time = self.start_time - self.curr_time
 
-                else:
+            #     else:
 
-                    self.conception_time = self.curr_time - self.start_time
+            #         self.conception_time = self.curr_time - self.start_time
 
-                print("\nInitial Starting Time: " +
-                      str(self.start_time.strftime('%Y/%m/%d %I:%M:%S %p')))
+            #     print("\nInitial Starting Time: " +
+            #           str(self.start_time.strftime('%Y/%m/%d %I:%M:%S %p')))
 
-                print("Time Since Conception: " + str(self.conception_time))
+            #     print("Time Since Conception: " + str(self.conception_time))
 
-                print("Previous Clock Time: " +
-                      str(self.prev_time.strftime('%Y/%m/%d %I:%M:%S %p')))
+            #     print("Previous Clock Time: " +
+            #           str(self.prev_time.strftime('%Y/%m/%d %I:%M:%S %p')))
 
-                if self.prev_seg != None:
+            #     if self.prev_seg != None:
 
-                    print("Previous Segment Time: " + str(self.prev_seg))
+            #         print("Previous Segment Time: " + str(self.prev_seg))
 
-                print("Current Clock Time: " +
-                      str(self.curr_time.strftime('%Y/%m/%d %I:%M:%S %p')))
+            #     print("Current Clock Time: " +
+            #           str(self.curr_time.strftime('%Y/%m/%d %I:%M:%S %p')))
 
-                print("Current Segment Time: " + str(self.curr_seg))
+            #     print("Current Segment Time: " + str(self.curr_seg))
 
-                print()
+            #     print()
 
-            # This means we need to save the current time difference between the previous clock and current clock
-            elif choice == 'c':
-                break
+            # # This means we need to save the current time difference between the previous clock and current clock
+            # elif choice == 'c':
+            #     break
 
         self.prev_time = self.curr_time
         self.prev_seg = self.curr_seg

@@ -10,6 +10,7 @@ class Adapter:
 
         self.schedule = Schedule()
         self.task_info1 = None
+        self.computation = None
 
     def create_task(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50):
         self.task_info1 = Task_Information(str(category), str(name), int(num_segments), display_lines, int(num_lines), int(num_iterations))
@@ -26,10 +27,19 @@ class Adapter:
 
         self.schedule.remove_task(task_name)
 
-    def start_task(self, task_name):
+    def setup_computation(self, task_name):
 
-        self.schedule.start_task(task_name)
+        if self.computation == None:
+        
+            self.computation = self.schedule.setup_computation(task_name)
 
+    def reset_time(self):
+
+        self.computation.reset_start_time()
+
+    def next_segment(self):
+
+        self.computation.next_segment()
     # def task_info(self, task_name):
     #     computation = Computation(task_name)
     #     return computation.task
@@ -47,7 +57,9 @@ if __name__ == '__main__':
     eel.expose(obj.create_task)
     eel.expose(obj.get_tasks)
     eel.expose(obj.delete_task)
-    eel.expose(obj.start_task)
+    eel.expose(obj.setup_computation)
+    eel.expose(obj.reset_time)
+    eel.expose(obj.next_segment)
     # eel.expose(obj.task_info)
     # schedule = Schedule()
     # Naming: category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50

@@ -29,19 +29,19 @@ window.addEventListener("DOMContentLoaded", function() {
 function startTask() {
   var taskName = localStorage.getItem("taskName");
   // console.log(taskName)
+  eel.setup_computation(taskName);
   var startButton = document.getElementById("start");
   startButton.disabled = true;
-
+  eel.reset_time();
   var nextButton = document.createElement("button");
   nextButton.innerHTML = "Next Segment";
   nextButton.classList.add("nextButton");
   nextButton.onclick = function() {
-    //ADD FUNCTIONALITY
-    alert(taskName);
+    eel.next_segment();
   };
   document.getElementById("myUl").appendChild(nextButton);
 
-  eel.start_task(taskName);
+  
 }
 
 function displayTaskInfo() {
@@ -70,7 +70,7 @@ function createTaskScreen() {
 // function startTask(taskName) {
 //   // Remove console.log
 //   console.log("Start Task: " + taskName);
-//   eel.start_task(taskName)
+//   eel.setup_computation(taskName)
 // }
 
 function deleteTask(taskName) {

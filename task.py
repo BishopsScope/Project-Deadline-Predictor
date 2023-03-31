@@ -122,7 +122,7 @@ class Schedule:
 
         self.to_file()
 
-    def start_task(self, task_name):
+    def setup_computation(self, task_name):
 
         for i in range(len(self.schedule_list)):
 
@@ -131,7 +131,8 @@ class Schedule:
                 comp = Computation(self.schedule_list[i])
                 break
 
-        comp.running_code()
+        # comp.running_code()
+        return comp
 
     def tasks(self):
         return self.schedule_list
