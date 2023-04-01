@@ -5,8 +5,6 @@ from sklearn import linear_model
 import matplotlib.pyplot as plt
 import os
 
-
-
 class Computation():
 
     np.set_printoptions(precision=14, suppress=True)
@@ -24,6 +22,10 @@ class Computation():
         self.end_points = np.array([])
         self.curr_seg_num = 0
 
+    def is_last_computation(self):
+
+        return self.curr_seg_num >= self.task.num_subtasks()
+
     # Must call this method before calling next segment.
     # This function should only be called once at the start
     # of the task.
@@ -39,9 +41,16 @@ class Computation():
         if self.curr_seg_num < self.task.num_subtasks():
             self.curr_seg_num += 1
             self.running_code()
-            return True
-
-        return False
+            # return [str(self.start_time), str(self.prev_time), str(self.prev_time_mins), str(self.prev_seg), str(self.prev_seg_mins), str(self.end_points), str(self.curr_seg_num)]
+            return {"Start Time: ": str(self.start_time),
+                    "Previous Time: ": str(self.prev_time),
+                    "Previous Time Minutes: ": str(self.prev_time_mins), 
+                    "Previous Segment: ": str(self.prev_seg),
+                    "Previous Segment Minutes: ": str(self.prev_seg_mins),
+                    "Min Endpoint: " : str(np.min(self.end_points)),
+                    "Max Endpoint: " : str(np.max(self.end_points)), 
+                    "Number of Segments Completed: ": str(self.curr_seg_num)}
+        return {}
         
     def running_code(self):
 
@@ -112,6 +121,7 @@ class Computation():
         self.train_lines_2(self.curr_seg_num)
 
         # Check if the user wants to see lines displayed or not
+        print(self.task.display_plot())
         if self.task.display_plot():
             # This is the first set of lines we plot
             print("Plotting Lines ...")
@@ -186,14 +196,14 @@ class Computation():
 
             # if choice == 'i':
 
-            #     if ((self.start_time - self.curr_time).total_seconds() >= 0):
+        if ((self.start_time - self.curr_time).total_seconds() >= 0):
 
-            #         # Conception time is the time that has elapsed
-            #         self.conception_time = self.start_time - self.curr_time
+            # Conception time is the time that has elapsed
+            self.conception_time = self.start_time - self.curr_time
+        
+        else:
 
-            #     else:
-
-            #         self.conception_time = self.curr_time - self.start_time
+            self.conception_time = self.curr_time - self.start_time
 
             #     print("\nInitial Starting Time: " +
             #           str(self.start_time.strftime('%Y/%m/%d %I:%M:%S %p')))

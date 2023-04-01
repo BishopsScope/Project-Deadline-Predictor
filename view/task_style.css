@@ -2,6 +2,12 @@ body {
     font-family: Arial, sans-serif;
     background-color: #c6c3c3;
 }
+/* html {
+    margin: 0;
+    background:linear-gradient(#eacda3, #d6ae7b);
+    height: 100%;
+} */
+
 h1{
     color: #4a4848;
     text-align: center;
@@ -35,10 +41,10 @@ h1{
     border-radius: 4px;
     border: none;
     color: white;
-    background-color: #4a4848;
+    background-color: #2839b7;
 }
 .start:hover {
-    background-color: #615f5f;
+    background-color: #35b63b;
 }
 .start:disabled {
     background-color: #615f5f;
@@ -47,25 +53,43 @@ h1{
 
 .task_info {
     color: #4a4848;
-    max-width: 300px;
+    max-width: 400px;
     margin: 0px auto;
+    margin-bottom: 20px;
     justify-content: space-between;
     background-color: white;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
+    text-align: Left;
     list-style-type: none;
 }
 
+li {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
 .nextButton {
-    background-color: #2bb132;
-    color: white;
+    display: block;
+    margin: 10px auto 0;
+    margin-bottom: 20px;
+    width: 30%;
+    padding: 5px;
     cursor: pointer;
     border-radius: 4px;
     border: none;
-    align-items: right;
+    color: white;
+    background-color: #26be2e;
 }
 .nextButton:hover {
-    background-color: #4cba52;
+    background-color: #3fc846;
+}
+.nextButton:disabled {
+    background-color: #615f5f;
+    cursor: not-allowed;
+}
+.key {
+    font-weight: bold;
 }

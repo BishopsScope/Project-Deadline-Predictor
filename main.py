@@ -3,7 +3,6 @@ import eel
 from task import *
 from computation import *
 
-
 class Adapter:
 
     def __init__(self):
@@ -33,13 +32,17 @@ class Adapter:
         
             self.computation = self.schedule.setup_computation(task_name)
 
+    def check_last_computation(self):
+
+        return self.computation.is_last_computation()
+
     def reset_time(self):
 
         self.computation.reset_start_time()
 
     def next_segment(self):
 
-        self.computation.next_segment()
+        return self.computation.next_segment()
     # def task_info(self, task_name):
     #     computation = Computation(task_name)
     #     return computation.task
@@ -60,6 +63,7 @@ if __name__ == '__main__':
     eel.expose(obj.setup_computation)
     eel.expose(obj.reset_time)
     eel.expose(obj.next_segment)
+    eel.expose(obj.check_last_computation)
     # eel.expose(obj.task_info)
     # schedule = Schedule()
     # Naming: category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50

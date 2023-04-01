@@ -1,21 +1,3 @@
-// Onclick of the button'
-// window.addEventListener("resize", function(){
-//   window.resizeTo(500, 500);
-// });
-
-// function prevent_resize() {
-//   var width = window.innerWidth;
-//   var height = window.innerHeight;
-//   if (width < 500) {
-//     window.resizeTo(500, height);
-//   }
-//   if (height < 500) {
-//     window.resizeTo(width, 500);
-//   }
-// }
-// window.addEventListener("resize", prevent_resize);
-
-
 window.addEventListener("DOMContentLoaded", function() {
   // Check if the current page is index.html
   if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
@@ -26,8 +8,11 @@ window.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+
 function startTask() {
+  // document.getElementById("myUl").innerHTML = "";
   var taskName = localStorage.getItem("taskName");
+  document.getElementById("myUl").innerHTML = "Click Next Segment once a segment is completed.";
   // console.log(taskName)
   // TODO: Move this out of start and put it somewhere else
   //       so that the time isn't restarted every time the
@@ -39,12 +24,46 @@ function startTask() {
   var nextButton = document.createElement("button");
   nextButton.innerHTML = "Next Segment";
   nextButton.classList.add("nextButton");
-  nextButton.onclick = function() {
-    eel.next_segment();
-  };
-  document.getElementById("myUl").appendChild(nextButton);
 
-  
+  nextButton.onclick = function() {
+    eel.next_segment()(function(ret) {
+
+      eel.check_last_computation()(function(ret){
+        if (ret)
+        {
+          nextButton.innerHTML = "Complete Task";
+        }
+        else
+        {
+          nextButton.innerHTML = "Next Segment";
+        }
+      });
+
+      console.log(ret);
+      document.getElementById("myUl").innerHTML = "";
+      Object.entries(ret).forEach(([key, value]) => {
+        const keyElement = document.createElement("span");
+        keyElement.className = "key";
+        keyElement.textContent = key;
+
+        const valueElement = document.createElement("span");
+        valueElement.textContent = value;
+
+        const li = document.createElement("li");
+        li.appendChild(keyElement);
+        li.appendChild(valueElement);
+
+        document.getElementById("myUl").appendChild(li);
+      });
+      
+      if (Object.keys(ret).length == 0)
+      {
+        document.getElementById("myUl").innerHTML = "Task has been completed.";
+        nextButton.disabled = true;
+      }
+    });
+  };
+  document.getElementById("nextButton").appendChild(nextButton);
 }
 
 function displayTaskInfo() {
@@ -69,12 +88,6 @@ function taskScreen(taskName) {
 function createTaskScreen() {
   window.location.href = "index.html";
 }
-
-// function startTask(taskName) {
-//   // Remove console.log
-//   console.log("Start Task: " + taskName);
-//   eel.setup_computation(taskName)
-// }
 
 function deleteTask(taskName) {
   // Remove console.log
@@ -151,4 +164,3 @@ function createTask() {
     updateTaskList();
   }  
 }
-
