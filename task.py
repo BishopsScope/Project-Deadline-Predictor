@@ -143,11 +143,6 @@ class Schedule:
 
     def tasks(self):
         return self.schedule_list
-
-    # TODO: Need to make this function interact with the front end
-    def print_names(self):
-        for task in self.schedule_list:
-            print(task.task_name())
             
     def list_names(self):
         task_list = []

@@ -12,10 +12,6 @@ window.addEventListener("DOMContentLoaded", function() {
 function startTask() {
   var taskName = localStorage.getItem("taskName");
   document.getElementById("myUl").innerHTML = "Click Next Segment once a segment is completed.";
-  // console.log(taskName)
-  // TODO: Move this out of start and put it somewhere else
-  //       so that the time isn't restarted every time the
-  //       user resumes a task
   eel.setup_computation(taskName);
   var startButton = document.getElementById("start");
   startButton.disabled = true;
@@ -67,21 +63,12 @@ function startTask() {
 
 function displayTaskInfo() {
   var taskName = localStorage.getItem("taskName");
-  // console.log(taskName)
   document.getElementById("task-name").innerHTML = "Task: " + taskName;
-  // eel.task_info(taskName)(function(ret) {
-  //   document.getElementById("task-info").innerHTML = ret;
-  // })
-  // if (taskName) {
-  //     document.getElementById("task-name").innerHTML = taskName;
-  // }
 }
 
 function taskScreen(taskName) {
-  // window.location.href = "task.html";
   localStorage.setItem("taskName", taskName);
   window.location.href = "task.html";
-  // displayTaskName();
 }
 
 function createTaskScreen() {
@@ -89,8 +76,6 @@ function createTaskScreen() {
 }
 
 function deleteTask(taskName) {
-  // Remove console.log
-  console.log("Delete Task: " + taskName);
   eel.delete_task(taskName);
   updateTaskList();
 }
@@ -113,7 +98,6 @@ function updateTaskList() {
       startButton.classList.add("startButton");
       // Once clicked, we have a test function the does a console log of the name
       startButton.onclick = function() {
-        // startTask(ret[i]);
         taskScreen(ret[i]);
       };
 
