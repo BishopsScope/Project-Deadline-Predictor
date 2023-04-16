@@ -1,4 +1,3 @@
-#import time_manager
 import eel
 from task import *
 from computation import *
@@ -14,9 +13,6 @@ class Adapter:
     def create_task(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50):
         self.task_info1 = Task_Information(str(category), str(name), int(num_segments), display_lines, int(num_lines), int(num_iterations))
         self.schedule.add_task(self.task_info1)
-        # print("task created")
-        # print(self.schedule.list_names())
-        # return self.schedule.list_names()
 
     def get_tasks(self):
 
@@ -28,9 +24,7 @@ class Adapter:
 
     def setup_computation(self, task_name):
 
-        if self.computation == None:
-        
-            self.computation = self.schedule.setup_computation(task_name)
+        self.computation = self.schedule.setup_computation(task_name)
 
     def check_last_computation(self):
 
@@ -40,17 +34,12 @@ class Adapter:
 
         self.computation.reset_start_time()
 
+    # This function must be called immediately before update_pickle()
     def next_segment(self):
-
         return self.computation.next_segment()
-    # def task_info(self, task_name):
-    #     computation = Computation(task_name)
-    #     return computation.task
 
-    # def get_segment(self, task_name):
-    #     computation = Computation(task_name)
-    #     computation.get_segment()
-    #     return computation.prev_time, computation.prev_seg
+    def update_pickle(self):
+        self.schedule.to_file()
 
 if __name__ == '__main__':
     eel.init("view")
@@ -64,6 +53,7 @@ if __name__ == '__main__':
     eel.expose(obj.reset_time)
     eel.expose(obj.next_segment)
     eel.expose(obj.check_last_computation)
+    eel.expose(obj.update_pickle)
     # eel.expose(obj.task_info)
     # schedule = Schedule()
     # Naming: category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50

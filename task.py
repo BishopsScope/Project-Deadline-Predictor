@@ -13,10 +13,11 @@ if not os.path.exists(main_directory):
     os.makedirs(main_directory)
 
 class Task_Information:
-    def __init__(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50):
+    def __init__(self, category, name, num_segments, display_lines=False, num_lines=15, num_iterations=50, curr_seg_num=0):
         self.name = name
         self.category = category
         self.num_lines = num_lines
+        self.curr_seg_num = curr_seg_num
         # The following variable is for storing how many segments have been completed
         # (Note: It will only be used on the front end and not the graphical plot.
         #        The graphical plot will only use num_segments)
@@ -54,6 +55,12 @@ class Task_Information:
 
     def num_subtasks(self):
         return self.num_segments
+
+    def curr_subtask_num(self):
+        return self.curr_seg_num
+
+    def update_subtask_num(self):
+        self.curr_seg_num += 1
 
     def decrement_subtasks(self):
         if self.num_segments != 0:

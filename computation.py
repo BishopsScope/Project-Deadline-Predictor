@@ -20,11 +20,11 @@ class Computation():
         self.prev_seg = None
         self.prev_seg_mins = 0
         self.end_points = np.array([])
-        self.curr_seg_num = 0
+        # self.task.curr_subtask_num() = self.task.curr_subtask_num()
 
     def is_last_computation(self):
 
-        return self.curr_seg_num >= self.task.num_subtasks()
+        return self.task.curr_subtask_num() >= self.task.num_subtasks()
 
     # Must call this method before calling next segment.
     # This function should only be called once at the start
@@ -38,10 +38,10 @@ class Computation():
     # When True, do nothing
     # When False, change the "Next Segment" button to be "Complete"
     def next_segment(self):
-        if self.curr_seg_num < self.task.num_subtasks():
-            self.curr_seg_num += 1
+        if self.task.curr_subtask_num() < self.task.num_subtasks():
+            self.task.update_subtask_num()
             self.running_code()
-            # return [str(self.start_time), str(self.prev_time), str(self.prev_time_mins), str(self.prev_seg), str(self.prev_seg_mins), str(self.end_points), str(self.curr_seg_num)]
+            # return [str(self.start_time), str(self.prev_time), str(self.prev_time_mins), str(self.prev_seg), str(self.prev_seg_mins), str(self.end_points), str(self.task.curr_subtask_num())]
             return {"Start Time: ": str(self.start_time),
                     "Previous Time: ": str(self.prev_time),
                     "Previous Time Minutes: ": str(self.prev_time_mins), 
@@ -49,7 +49,7 @@ class Computation():
                     "Previous Segment Minutes: ": str(self.prev_seg_mins),
                     "Min Endpoint: " : str(np.min(self.end_points)),
                     "Max Endpoint: " : str(np.max(self.end_points)), 
-                    "Number of Segments Completed: ": str(self.curr_seg_num)}
+                    "Number of Segments Completed: ": str(self.task.curr_subtask_num())}
         return {}
         
     def running_code(self):
@@ -118,14 +118,14 @@ class Computation():
         # print("All of your data since conception: " + str(user_input_data))
 
         # Train and print the new lines
-        self.train_lines_2(self.curr_seg_num)
+        self.train_lines_2(self.task.curr_subtask_num())
 
         # Check if the user wants to see lines displayed or not
         print(self.task.display_plot())
         if self.task.display_plot():
             # This is the first set of lines we plot
             print("Plotting Lines ...")
-            self.plot_lines(self.curr_seg_num)
+            self.plot_lines(self.task.curr_subtask_num())
 
         # Get the endpoints for where each line intersects the y = num_segments line
 
@@ -153,7 +153,7 @@ class Computation():
         self.write_csv()
 
         # cont = input("Would you like to continue? (Y/N) ")
-        print("You have completed: " + str(self.curr_seg_num ) + " / " +
+        print("You have completed: " + str(self.task.curr_subtask_num() ) + " / " +
                 str(self.task.num_subtasks()) + " segments\n\n")
 
         print("Done!")

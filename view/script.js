@@ -10,7 +10,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
 
 function startTask() {
-  // document.getElementById("myUl").innerHTML = "";
   var taskName = localStorage.getItem("taskName");
   document.getElementById("myUl").innerHTML = "Click Next Segment once a segment is completed.";
   // console.log(taskName)
@@ -39,7 +38,6 @@ function startTask() {
         }
       });
 
-      console.log(ret);
       document.getElementById("myUl").innerHTML = "";
       Object.entries(ret).forEach(([key, value]) => {
         const keyElement = document.createElement("span");
@@ -62,6 +60,7 @@ function startTask() {
         nextButton.disabled = true;
       }
     });
+    eel.update_pickle();
   };
   document.getElementById("nextButton").appendChild(nextButton);
 }
@@ -160,7 +159,7 @@ function createTask() {
   var iterations = document.getElementById("iterations").value;
 
   if (correctInput()) {
-    eel.create_task(category, task_name, segment_number, display_plot, num_lines, iterations)
+    eel.create_task(category, task_name, segment_number, display_plot, num_lines, iterations);
     updateTaskList();
   }  
 }
