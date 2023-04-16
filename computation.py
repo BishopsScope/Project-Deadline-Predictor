@@ -5,6 +5,8 @@ from sklearn import linear_model
 import matplotlib.pyplot as plt
 import os
 
+DECIMAL_PLACES = 4
+
 class Computation():
 
     np.set_printoptions(precision=14, suppress=True)
@@ -42,14 +44,15 @@ class Computation():
             self.task.update_subtask_num()
             self.running_code()
             # return [str(self.start_time), str(self.prev_time), str(self.prev_time_mins), str(self.prev_seg), str(self.prev_seg_mins), str(self.end_points), str(self.task.curr_subtask_num())]
-            return {"Start Time: ": str(self.start_time),
+            return {"Number of Segments Completed: ": str(self.task.curr_subtask_num()),
+                    "Start Time: ": str(self.start_time),
                     "Previous Time: ": str(self.prev_time),
-                    "Previous Time Minutes: ": str(self.prev_time_mins), 
+                    "Previous Time Minutes: ": (f"{str(round(self.prev_time_mins, DECIMAL_PLACES))} minutes"),
                     "Previous Segment: ": str(self.prev_seg),
-                    "Previous Segment Minutes: ": str(self.prev_seg_mins),
-                    "Min Endpoint: " : str(np.min(self.end_points)),
-                    "Max Endpoint: " : str(np.max(self.end_points)), 
-                    "Number of Segments Completed: ": str(self.task.curr_subtask_num())}
+                    "Previous Segment Minutes: ": (f"{str(round(self.prev_seg_mins, DECIMAL_PLACES))} minutes"),
+                    "Range: " : (f"{str(round(np.min(self.end_points), DECIMAL_PLACES))} minutes\nto\n{str(round(np.max(self.end_points), 2))} minutes remaining")
+                    # "Max Endpoint: " : str(np.max(self.end_points))
+                    }
         return {}
         
     def running_code(self):
