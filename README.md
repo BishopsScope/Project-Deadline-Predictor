@@ -3,7 +3,8 @@
 ## Members:
 
 Anthony Maida amaida@csu.fullerton.edu
-Steven Burroughs
+
+Steven Burroughs bishopsscope@csu.fullerton.edu
 
 ## Purpose:
 
